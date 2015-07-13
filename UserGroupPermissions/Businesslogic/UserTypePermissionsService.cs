@@ -45,7 +45,7 @@ namespace UserGroupPermissions.Businesslogic
                 var newPerms = new UserTypePermission
                 {
                     NodeId = node.Id,
-                    PermissionId = permissionKey,
+                    PermissionId = permissionKey.ToString(),
                     UserTypeId = userType.Id,
                 };
 
@@ -80,10 +80,12 @@ namespace UserGroupPermissions.Businesslogic
 
             foreach (string nodeId in path.Split(','))
             {
-                if (allUserPermissions.Select(x => x.Key).Contains(int.Parse(nodeId)))
+                var parsedNodeId = int.Parse(nodeId);
+                if (allUserPermissions.Select(x => x.Key).Contains(parsedNodeId))
                 {
-                    var userTypenodePermissions = 
-                        String.Join(string.Empty, allUserPermissions.FirstOrDefault(x => x.Key == int.Parse(nodeId)).Select(x => x.PermissionId));
+                    var userTypenodePermissions =  String.Join(string.Empty,
+                        allUserPermissions.FirstOrDefault(x => x.Key == parsedNodeId)
+                        .Select(x => x.PermissionId));
 
                     if (!string.IsNullOrEmpty(userTypenodePermissions))
                     {
@@ -118,15 +120,16 @@ namespace UserGroupPermissions.Businesslogic
             if (!user.IsAdmin() && !user.Disabled())
             {
                 var permissions = GetUserTypePermissions(user.UserType);
+                var contentService = ApplicationContext.Current.Services.ContentService;
 
                 foreach (var permission in permissions)
                 {
-
-                    var node = ApplicationContext.Current.Services.ContentService.GetById(permission.NodeId);
-
-                    ApplicationContext.Current.Services.ContentService.AssignContentPermission(node,
-                        permission.PermissionId, new int[] {user.Id});
-
+                    var node = contentService.GetById(permission.NodeId);
+                    if (!string.IsNullOrWhiteSpace(permission.PermissionId) && node != null)
+                    {
+                        ApplicationContext.Current.Services.ContentService.AssignContentPermission(node,
+                            permission.PermissionId[0], new int[] { user.Id });
+                    }
                 }
             }
         }
