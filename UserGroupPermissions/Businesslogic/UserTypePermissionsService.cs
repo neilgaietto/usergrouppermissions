@@ -13,25 +13,18 @@ using UserGroupPermissions.Models;
 
 namespace UserGroupPermissions.Businesslogic
 {
-    /// <summary>
-    /// 
-    /// </summary>
+
     public class UserTypePermissionsService
     {
 
         private readonly Database _sqlHelper;
 
-        /// <summary>
-        /// Private constructor, this class cannot be directly instantiated
-        /// </summary>
-        
+
         public UserTypePermissionsService()
         {
             _sqlHelper = ApplicationContext.Current.DatabaseContext.Database;
         }
 
-
-            
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void Insert(IUserType userType, IContent node, char permissionKey)
@@ -62,17 +55,16 @@ namespace UserGroupPermissions.Businesslogic
         /// <param name="userType"></param>
         /// <returns></returns>
         public IEnumerable<UserTypePermission> GetUserTypePermissions(IUserType userType)
-            {
+        {
 
-                var items = _sqlHelper.Fetch<UserTypePermission>(
-                    "select * from UserTypePermissions  where UserTypeId = @0 order by NodeId", userType.Id);
+            var items = _sqlHelper.Fetch<UserTypePermission>(
+                "select * from UserTypePermissions  where UserTypeId = @0 order by NodeId", userType.Id);
 
-                return items;
-            }
+            return items;
+        }
 
         public string GetPermissions(IUserType userType, string path)
         {
-            
 
             string defaultPermissions = String.Join(string.Empty, userType.Permissions);
             
