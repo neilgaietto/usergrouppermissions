@@ -101,7 +101,6 @@
     <Content Include="Binaries\umbraco.DataLayer.dll" />
     <Content Include="Binaries\umbraco.dll" />
     <Content Include="App_Plugins\UserGroupPermissions\Dialogs\SetUsergroupPermissions.aspx" />
-    <Content Include="Images\group_edit.png" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

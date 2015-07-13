@@ -3,6 +3,7 @@ using Umbraco.Core.Models.Membership;
 using Umbraco.Web.Trees;
 using Umbraco.Web.Models.Trees;
 using Umbraco.Web.Mvc;
+using UserGroupPermissions.ExtensionMethods;
 
 namespace UserGroupPermissions.Events
 {
@@ -24,7 +25,7 @@ namespace UserGroupPermissions.Events
             // for all content tree nodes
             IUser currentUser = sender.Security.CurrentUser;
             if (sender.TreeAlias == "content"
-                && currentUser.UserType.Alias == "admin")
+                && currentUser.IsAdmin())
             {
                 var menuItem = new MenuItem("UserGroupPermissions", "User Group permissions") {Icon = "vcard"};
 
