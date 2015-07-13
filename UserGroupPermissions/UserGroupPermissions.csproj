@@ -97,6 +97,8 @@
     <Content Include="Binaries\cms.dll" />
     <Content Include="Binaries\controls.dll" />
     <Content Include="Binaries\interfaces.dll" />
+    <Content Include="Binaries\Umbraco.Core.dll" />
+    <Content Include="Binaries\umbraco.DataLayer.dll" />
     <Content Include="Binaries\umbraco.dll" />
     <Content Include="App_Plugins\UserGroupPermissions\Dialogs\SetUsergroupPermissions.aspx" />
     <Content Include="Images\group_edit.png" />
@@ -159,8 +161,8 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>XCOPY "$(ProjectDir)bin\UserGroupPermissions.dll" "C:\Users\Carl Jackson\Documents\Visual Studio 2013\Projects\jaywing-umbracobase\JaywingUmbracoBase\bin" /y /s
-XCOPY "$(ProjectDir)App_Plugins\UserGroupPermissions\*" "C:\Users\Carl Jackson\Documents\Visual Studio 2013\Projects\jaywing-umbracobase\JaywingUmbracoBase\App_Plugins\UserGroupPermissions" /s /i /y</PostBuildEvent>
+    <PostBuildEvent>XCOPY "$(ProjectDir)bin\UserGroupPermissions.dll" "C:\websites\user-group-permissions-website\bin" /y /s
+XCOPY "$(ProjectDir)App_Plugins\UserGroupPermissions\*" "C:\websites\user-group-permissions-website\App_Plugins\UserGroupPermissions" /s /i /y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
