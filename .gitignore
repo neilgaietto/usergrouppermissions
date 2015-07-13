@@ -6,5 +6,10 @@ Cached/
 ExamineIndexes/
 bin/
 obj/
+
 # Ignore Umbraco content cache file
 umbraco.config
+
+# User-specific files
+*.suo
+*.csproj.user
