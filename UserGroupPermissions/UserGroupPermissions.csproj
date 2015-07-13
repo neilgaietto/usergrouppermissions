@@ -124,7 +124,6 @@
     <Compile Include="Events\AddUserGroupPermissionToContextMenu.cs" />
     <Compile Include="Events\InstallLanguageskeys.cs" />
     <Compile Include="Events\RegisterDatabase.cs" />
-    <Compile Include="Events\ReloadUsersOnSaveUsertype.cs" />
     <Compile Include="Events\UserSaved.cs" />
     <Compile Include="ExtensionMethods\UserExtensions.cs" />
     <Compile Include="ExtensionMethods\UsertypeExtensions.cs" />
