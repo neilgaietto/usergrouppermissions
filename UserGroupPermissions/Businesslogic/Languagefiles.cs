@@ -5,6 +5,9 @@ using System.Web;
 using umbraco;
 using System.Xml;
 using System.IO;
+using Umbraco.Core;
+using Umbraco.Web;
+using System.Globalization;
 
 namespace UserGroupPermissions.Businesslogic
 {
@@ -19,21 +22,14 @@ namespace UserGroupPermissions.Businesslogic
             if (KeyMissing(key))
             {
                 string directory = HttpContext.Current.Server.MapPath(FormatUrl("/config/lang"));
-                string[] languageFiles = Directory.GetFiles(directory);
+                string[] languageFiles = Directory.GetFiles(directory, "*.xml",
+                    SearchOption.TopDirectoryOnly);
 
                 foreach (string languagefile in languageFiles)
                 {
                     //Strip 2digit langcode from filename
-
-                    string langcode = languagefile.Substring(languagefile.Length - 6, 2).ToLower();
-                    if (langcode == "nl")
-                    {
-                        UpdateActionsForLanguageFile("nl.xml", key, value);
-                    }
-                    else
-                    {
-                        UpdateActionsForLanguageFile(string.Format("{0}.xml", langcode), key, value);
-                    }
+                    string langcode = languagefile.Substring(0, 2).ToLower();
+                    UpdateActionsForLanguageFile(languagefile, key, value);
                 }
             }
         }
@@ -45,7 +41,12 @@ namespace UserGroupPermissions.Businesslogic
         /// <returns>True when key is missing</returns>
         private static bool KeyMissing(string key)
         {
-            return ui.GetText("actions", key) == string.Format("[{0}]", key);
+            var service = ApplicationContext.Current.Services.TextService;
+            var compoundKey = string.Format("{0}/{1}", "actions", key);
+            var culture = CultureInfo.GetCultureInfo(GlobalSettings.DefaultUILanguage);
+            var defaultText = string.Format("[{0}]", key);
+            var text = service.Localize(compoundKey, culture);
+            return text == defaultText;
         }
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace UserGroupPermissions.Businesslogic
         /// </summary>
         private static void UpdateActionsForLanguageFile(string languageFile, string key, string value)
         {
-            XmlDocument doc = xmlHelper.OpenAsXmlDocument(string.Format("{0}/config/lang/{1}", umbraco.GlobalSettings.Path, languageFile));
+            XmlDocument doc = XmlHelper.OpenAsXmlDocument(string.Format("{0}/config/lang/{1}", umbraco.GlobalSettings.Path, languageFile));
             XmlNode actionNode = doc.SelectSingleNode("//area[@alias='actions']");
 
             XmlNode node = actionNode.AppendChild(doc.CreateElement("key"));
