@@ -102,7 +102,6 @@
     <Content Include="Binaries\umbraco.dll" />
     <Content Include="App_Plugins\UserGroupPermissions\Dialogs\SetUsergroupPermissions.aspx" />
     <Content Include="Images\group_edit.png" />
-    <Content Include="Scripts\UserGroupPermissions.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -129,7 +128,6 @@
     <Compile Include="Events\UserSaved.cs" />
     <Compile Include="ExtensionMethods\UserExtensions.cs" />
     <Compile Include="ExtensionMethods\UsertypeExtensions.cs" />
-    <Compile Include="MenuActions\UsergroupPermissions.cs" />
     <Compile Include="Models\UserTypePermissions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
