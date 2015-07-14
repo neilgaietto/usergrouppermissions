@@ -15,7 +15,7 @@
         <cc1:PropertyPanel runat="server">
              <asp:PlaceHolder ID="PlaceHolder1" runat="server"></asp:PlaceHolder>
         </cc1:PropertyPanel>
-    <asp:CheckBox id="ReplacePermissionsOnUsers" runat="server" text="Replace permissions on all existing users" />
+    <asp:CheckBox id="ReplacePermissionsOnUsers" runat="server" text="Replace permissions on all existing users for this node" />
 
     </cc1:Pane>
 </div>
