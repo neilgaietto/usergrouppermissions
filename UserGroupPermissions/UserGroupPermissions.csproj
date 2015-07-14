@@ -158,6 +158,7 @@
   </ProjectExtensions>
   <PropertyGroup>
     <PostBuildEvent>XCOPY "$(ProjectDir)bin\UserGroupPermissions.dll" "C:\websites\user-group-permissions-website\bin" /y /s
+XCOPY "$(ProjectDir)bin\UserGroupPermissions.pdb" "C:\websites\user-group-permissions-website\bin" /y /s
 XCOPY "$(ProjectDir)App_Plugins\UserGroupPermissions\*" "C:\websites\user-group-permissions-website\App_Plugins\UserGroupPermissions" /s /i /y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

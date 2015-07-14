@@ -82,7 +82,7 @@ namespace UserGroupPermissions.Dialogs
             {
                 if (a.CanBePermissionAssigned)
                 {
-                    var compoundKey = string.Format("actions/{1}", a.Alias);
+                    var compoundKey = string.Format("actions/{0}", a.Alias);
                     HtmlTableRow hr = new HtmlTableRow();
 
                     HtmlTableCell hc = new HtmlTableCell();
