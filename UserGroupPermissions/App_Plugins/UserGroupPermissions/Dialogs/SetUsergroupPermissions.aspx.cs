@@ -1,21 +1,22 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Collections;
-using umbraco;
 using System.Web.UI.HtmlControls;
-using UserGroupPermissions.ExtensionMethods;
+using System.Web.UI.WebControls;
+using umbraco;
 using umbraco.BusinessLogic;
+using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Models.Membership;
 using Umbraco.Core.Services;
+using Umbraco.Web;
+using Umbraco.Web.UI.Pages;
 using UserGroupPermissions.Businesslogic;
-
-using umbraco.BasePages;
-using Umbraco.Core;
+using UserGroupPermissions.ExtensionMethods;
 
 namespace UserGroupPermissions.Dialogs
 {
@@ -30,12 +31,13 @@ namespace UserGroupPermissions.Dialogs
         {
             _userTypePermissionsService = new UserTypePermissionsService();
         }
+
         protected void Page_Load(object sender, System.EventArgs e)
         {
-            Button1.Text = ui.Text("update");
+            var service = ApplicationContext.Services.TextService;
+            var culture = CultureInfo.GetCultureInfo(GlobalSettings.DefaultUILanguage);
+            Button1.Text = service.Localize("update", culture);
             pane_form.Text = "Set Usergroup permissions for the page " + node.Name;
-
-            // Put user code to initialize the page here
         }
 
        
@@ -48,9 +50,14 @@ namespace UserGroupPermissions.Dialogs
             InitializeComponent();
             base.OnInit(e);
 
-            node = ApplicationContext.Services.ContentService.GetById(int.Parse(helper.Request("id")));
+            var textService = ApplicationContext.Services.TextService;
+            var userService = ApplicationContext.Services.UserService;
+            var contentService = ApplicationContext.Services.ContentService;
+            var nodeId = int.Parse(Request.GetItemAsString("id"));
+            node = contentService.GetById(nodeId);
+            var user = Security.CurrentUser;
+            var culture = user.GetUserCulture(textService);
 
-            //node = new umbraco.cms.businesslogic.CMSNode(int.Parse(helper.Request("id")));
 
             HtmlTable ht = new HtmlTable();
             ht.Attributes.Add("class", "table");
@@ -60,7 +67,7 @@ namespace UserGroupPermissions.Dialogs
             captions.Cells.Add(new HtmlTableCell());
 
 
-            foreach (IUserType userType in ApplicationContext.Services.UserService.GetAllUserTypes())
+            foreach (IUserType userType in userService.GetAllUserTypes())
             {
                 if (userType.Id > 0 && userType.Alias != "admin")
                 {
@@ -72,20 +79,19 @@ namespace UserGroupPermissions.Dialogs
             }
             ht.Rows.Add(captions);
             foreach (umbraco.interfaces.IAction a in umbraco.BusinessLogic.Actions.Action.GetAll())
-            //foreach (IUserType userType in ApplicationContext.Services.UserService.GetAllUserTypes())
             {
                 if (a.CanBePermissionAssigned)
                 {
+                    var compoundKey = string.Format("actions/{1}", a.Alias);
                     HtmlTableRow hr = new HtmlTableRow();
 
                     HtmlTableCell hc = new HtmlTableCell();
                     hc.Attributes.Add("class", "guiDialogTinyMark");
-                    hc.Controls.Add(new LiteralControl(ui.Text("actions", a.Alias)));
+                    hc.Controls.Add(new LiteralControl(textService.Localize(compoundKey, culture)));
                     hr.Cells.Add(hc);
 
 
                     foreach (IUserType userType in ApplicationContext.Services.UserService.GetAllUserTypes())
-                        //foreach (umbraco.interfaces.IAction a in umbraco.BusinessLogic.Actions.Action.GetAll())
                     {
                         // Not disabled users and not system account
                         if (userType.Id > 0 && userType.Alias != "admin")
@@ -126,9 +132,10 @@ namespace UserGroupPermissions.Dialogs
 
         protected void Button1_Click(object sender, System.EventArgs e)
         {
-            Hashtable allUserTypes = new Hashtable();
+            var allUserTypes = new Dictionary<int, string>();
+            var userService = ApplicationContext.Services.UserService;
 
-            foreach (umbraco.BusinessLogic.UserType u in UserType.GetAllUserTypes())
+            foreach (var u in userService.GetAllUserTypes())
             {
                 allUserTypes.Add(u.Id, "");
             }
@@ -137,26 +144,33 @@ namespace UserGroupPermissions.Dialogs
             {
                 // Update the user with the new permission
                 if (c.Checked)
-                    allUserTypes[int.Parse(c.ID.Substring(0, c.ID.IndexOf("_")))] = (string)allUserTypes[int.Parse(c.ID.Substring(0, c.ID.IndexOf("_")))] + c.ID.Substring(c.ID.IndexOf("_") + 1, c.ID.Length - c.ID.IndexOf("_") - 1);
+                {
+                    var posUnderscore = c.ID.IndexOf("_");
+                    var typeId = int.Parse(c.ID.Substring(0, posUnderscore));
+                    var strPermissions = c.ID.Substring(posUnderscore + 1, c.ID.Length - posUnderscore - 1);
+                    var newPermissions = (allUserTypes[typeId] + strPermissions).ToCharArray();
+                    var distinctPermissions = newPermissions.DistinctBy(x => x.ToString().ToLower());
+                    var combinedPermissions = string.Join(string.Empty, distinctPermissions);
+                    allUserTypes[typeId] = combinedPermissions;
+                }
             }
 
 
             // Loop through the users and update their Cruds...
-            IDictionaryEnumerator uEnum = allUserTypes.GetEnumerator();
-            while (uEnum.MoveNext())
+            foreach (var pair in allUserTypes)
             {
                 string cruds = "-";
-                if (uEnum.Value.ToString().Trim() != "")
+                if (!string.IsNullOrWhiteSpace(pair.Value))
                 {
-                    cruds = uEnum.Value.ToString();
+                    cruds = pair.Value;
                 }
-                IUserType usertype = ApplicationContext.Services.UserService.GetUserTypeById(int.Parse(uEnum.Key.ToString()));
+                IUserType usertype = userService.GetUserTypeById(pair.Key);
 
                 _userTypePermissionsService.UpdateCruds(usertype, node, cruds);
 
-                if (ReplacePermissionsOnChildren.Checked)
+                if (ReplacePermissionsOnUsers.Checked)
                 {
-                    //Replace permissions on all children
+                    //Replace permissions on all users
                     _userTypePermissionsService.CopyPermissions(usertype, node);
                 }
             }
@@ -165,12 +179,9 @@ namespace UserGroupPermissions.Dialogs
             // Sync the tree
             ClientTools.SyncTree(node.Path, true);
 
-            // Reload the page if the content was already being viewed
-            ClientTools.ReloadContentFrameUrlIfPathLoaded("/editContent.aspx?id=" + node.Id);
-
             // Update feedback message
             feedback1.type = umbraco.uicontrols.Feedback.feedbacktype.success;
-            feedback1.Text = "Usergroup permissions saved ok ";
+            feedback1.Text = "Usergroup permissions saved ok";
             pane_form.Visible = false;
             
         }

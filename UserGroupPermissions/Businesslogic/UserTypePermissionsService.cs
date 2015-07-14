@@ -139,8 +139,8 @@ namespace UserGroupPermissions.Businesslogic
             {
                 if (!user.IsAdmin() && !user.Disabled())
                 {
-                    ApplicationContext.Current.Services.UserService.ReplaceUserPermissions(user.Id, permissions, node.Id);
-
+                    ApplicationContext.Current.Services.UserService
+                        .ReplaceUserPermissions(user.Id, permissions, node.Id);
                 }
             }
         }
