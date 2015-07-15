@@ -2,24 +2,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using umbraco;
-using umbraco.BusinessLogic;
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Models.Membership;
-using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.UI.Pages;
 using UserGroupPermissions.Businesslogic;
-using UserGroupPermissions.ExtensionMethods;
 
 namespace UserGroupPermissions.Dialogs
 {
+
+    /// <summary>
+    /// Helps with user group permissions.
+    /// </summary>
+    /// <remarks>
+    /// "Borrowed" from the core: https://github.com/umbraco/Umbraco-CMS/blob/release-7.2.6/src/Umbraco.Web/umbraco.presentation/umbraco/dialogs/cruds.aspx.cs
+    /// </remarks>
     public partial class SetUsergroupPermissions : UmbracoEnsuredPage
     {
         private ArrayList permissions = new ArrayList();
@@ -36,7 +38,7 @@ namespace UserGroupPermissions.Dialogs
         {
             var service = ApplicationContext.Services.TextService;
             var culture = CultureInfo.GetCultureInfo(GlobalSettings.DefaultUILanguage);
-            Button1.Text = service.Localize("update", culture);
+            btnUpdate.Text = service.Localize("update", culture);
             pane_form.Text = "Set Usergroup permissions for the page " + node.Name;
         }
 
@@ -115,7 +117,7 @@ namespace UserGroupPermissions.Dialogs
 
             ClientTools.SyncTree(node.Path, true);
 
-            PlaceHolder1.Controls.Add(ht);
+            phControls.Controls.Add(ht);
 
             
         }
@@ -130,7 +132,7 @@ namespace UserGroupPermissions.Dialogs
         }
         #endregion
 
-        protected void Button1_Click(object sender, System.EventArgs e)
+        protected void btnUpdate_Click(object sender, System.EventArgs e)
         {
             var allUserTypes = new Dictionary<int, string>();
             var userService = ApplicationContext.Services.UserService;
@@ -183,6 +185,7 @@ namespace UserGroupPermissions.Dialogs
             feedback1.type = umbraco.uicontrols.Feedback.feedbacktype.success;
             feedback1.Text = "Usergroup permissions saved ok";
             pane_form.Visible = false;
+            phButtons.Visible = false;
             
         }
     }

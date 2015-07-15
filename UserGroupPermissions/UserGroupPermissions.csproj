@@ -111,14 +111,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App_Plugins\UserGroupPermissions\package.manifest" />
+    <Compile Include="App_Plugins\UserGroupPermissions\Dialogs\SetUsergroupPermissions.aspx.manualDesigner.cs">
+      <DependentUpon>SetUsergroupPermissions.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Businesslogic\Languagefiles.cs" />
     <Compile Include="Businesslogic\UserTypePermissionsService.cs" />
     <Compile Include="App_Plugins\UserGroupPermissions\Dialogs\SetUsergroupPermissions.aspx.cs">
       <DependentUpon>SetUsergroupPermissions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="App_Plugins\UserGroupPermissions\Dialogs\SetUsergroupPermissions.aspx.designer.cs">
-      <DependentUpon>SetUsergroupPermissions.aspx</DependentUpon>
     </Compile>
     <Compile Include="Events\AddUserGroupPermissionToContextMenu.cs" />
     <Compile Include="Events\InstallLanguageskeys.cs" />

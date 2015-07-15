@@ -1,5 +1,6 @@
 ﻿<%@ Page MasterPageFile="~/umbraco/masterpages/umbracoDialog.Master"  Language="C#" AutoEventWireup="true" CodeBehind="SetUsergroupPermissions.aspx.cs" Inherits="UserGroupPermissions.Dialogs.SetUsergroupPermissions" %>
-<%@ Register TagPrefix="cc1" Namespace="umbraco.uicontrols" Assembly="controls" %>
+<%@ Register TagPrefix="ugp" Namespace="umbraco.uicontrols" Assembly="controls" %>
+<%-- "Borrowed" from the core: https://github.com/umbraco/Umbraco-CMS/blob/7c4a189aa3cf583954defd9c43a3e55e325f2c3f/src/Umbraco.Web.UI/umbraco/dialogs/cruds.aspx --%>
 
 <asp:Content ContentPlaceHolderID="head" runat="server">
 <style>
@@ -7,21 +8,19 @@
 </style>
 </asp:Content>
 <asp:Content ContentPlaceHolderID="body" runat="server">
-    
-<div class="umb-dialog-body form-horizontal">
-    <cc1:Feedback ID="feedback1" runat="server" />
-
-    <cc1:Pane ID="pane_form" runat="server">
-        <cc1:PropertyPanel runat="server">
-             <asp:PlaceHolder ID="PlaceHolder1" runat="server"></asp:PlaceHolder>
-        </cc1:PropertyPanel>
-    <asp:CheckBox id="ReplacePermissionsOnUsers" runat="server" text="Replace permissions on all existing users for this node" />
-
-    </cc1:Pane>
-</div>
-<div runat="server" ID="Div1" class="umb-dialog-footer btn-toolbar umb-btn-toolbar">
-        <a href="#" class="btn btn-link" onclick="UmbClientMgr.closeModalWindow()"><%=umbraco.ui.Text("general", "cancel")%></a>  
-       <asp:Button ID="Button1" runat="server" CssClass="btn btn-primary" OnClick="Button1_Click"></asp:Button>
-</div>
-
+    <div class="umb-dialog-body form-horizontal">
+        <ugp:Feedback ID="feedback1" runat="server" />
+        <ugp:Pane ID="pane_form" runat="server">
+            <ugp:PropertyPanel runat="server">
+                 <asp:PlaceHolder ID="phControls" runat="server"></asp:PlaceHolder>
+            </ugp:PropertyPanel>
+            <asp:CheckBox id="ReplacePermissionsOnUsers" runat="server" text="Replace permissions on all existing users for this node" />
+        </ugp:Pane>
+    </div>
+    <asp:PlaceHolder runat="server" ID="phButtons">
+        <div class="umb-dialog-footer btn-toolbar umb-btn-toolbar">
+            <a href="#" class="btn btn-link" onclick="UmbClientMgr.closeModalWindow()"><%=umbraco.ui.Text("general", "cancel")%></a>  
+            <asp:Button ID="btnUpdate" runat="server" CssClass="btn btn-primary" OnClick="btnUpdate_Click"></asp:Button>
+        </div>
+    </asp:PlaceHolder>
  </asp:Content>
