@@ -13,7 +13,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>UserGroupPermissions</RootNamespace>
     <AssemblyName>UserGroupPermissions</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <UseIISExpress>false</UseIISExpress>
     <FileUpgradeFlags>
@@ -102,12 +102,6 @@
     <Content Include="Binaries\umbraco.dll" />
     <Content Include="App_Plugins\UserGroupPermissions\Dialogs\SetUserGroupPermissions.aspx" />
     <Content Include="Web.config" />
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="App_Plugins\UserGroupPermissions\package.manifest" />

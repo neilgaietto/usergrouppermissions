@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using umbraco;
-using System.Xml;
+﻿using System.Globalization;
 using System.IO;
+using System.Web;
+using System.Xml;
+using umbraco;
 using Umbraco.Core;
-using Umbraco.Web;
-using System.Globalization;
 
 namespace UserGroupPermissions.Businesslogic
 {
@@ -27,8 +23,6 @@ namespace UserGroupPermissions.Businesslogic
 
                 foreach (string languagefile in languageFiles)
                 {
-                    //Strip 2digit langcode from filename
-                    string langcode = languagefile.Substring(0, 2).ToLower();
                     UpdateActionsForLanguageFile(languagefile, key, value);
                 }
             }
@@ -54,7 +48,7 @@ namespace UserGroupPermissions.Businesslogic
         /// </summary>
         private static void UpdateActionsForLanguageFile(string languageFile, string key, string value)
         {
-            XmlDocument doc = XmlHelper.OpenAsXmlDocument(string.Format("{0}/config/lang/{1}", umbraco.GlobalSettings.Path, languageFile));
+            XmlDocument doc = XmlHelper.OpenAsXmlDocument(languageFile);
             XmlNode actionNode = doc.SelectSingleNode("//area[@alias='actions']");
 
             XmlNode node = actionNode.AppendChild(doc.CreateElement("key"));
@@ -63,7 +57,7 @@ namespace UserGroupPermissions.Businesslogic
             att.InnerText = key;
             node.InnerText = value;
 
-            doc.Save(HttpContext.Current.Server.MapPath(string.Format("{0}/config/lang/{1}", umbraco.GlobalSettings.Path, languageFile)));
+            doc.Save(languageFile);
         }
 
         /// <summary>
