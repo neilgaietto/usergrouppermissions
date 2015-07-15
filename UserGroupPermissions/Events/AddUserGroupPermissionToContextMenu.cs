@@ -1,7 +1,6 @@
 ﻿using Umbraco.Core;
 using Umbraco.Core.Models.Membership;
 using Umbraco.Web.Models.Trees;
-using System.Linq;
 using Umbraco.Web.Trees;
 using UserGroupPermissions.ExtensionMethods;
 
