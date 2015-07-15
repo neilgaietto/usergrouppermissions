@@ -127,6 +127,7 @@
     <Compile Include="Events\UserSaved.cs" />
     <Compile Include="ExtensionMethods\UserExtensions.cs" />
     <Compile Include="ExtensionMethods\UsertypeExtensions.cs" />
+    <Compile Include="MenuActions\UserGroupPermissions.cs" />
     <Compile Include="Models\UserTypePermissions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

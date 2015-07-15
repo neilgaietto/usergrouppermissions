@@ -1,4 +1,5 @@
-﻿using Umbraco.Core;
+﻿using System.Linq;
+using Umbraco.Core;
 using Umbraco.Core.Models.Membership;
 using Umbraco.Web.Models.Trees;
 using Umbraco.Web.Trees;
@@ -13,14 +14,45 @@ namespace UserGroupPermissions.Events
             TreeControllerBase.MenuRendering += TreeControllerBase_MenuRendering;
         }
         
-        // The event listener method
+        // A context menu is rendering.
         void TreeControllerBase_MenuRendering(TreeControllerBase sender, MenuRenderingEventArgs e)
         {
-            // Add a custom menu item for all admin users for all content tree nodes.
+
+            // Initial check (in content tree and on a node).
             IUser currentUser = sender.Security.CurrentUser;
-            if (sender.TreeAlias == "content" && currentUser.IsAdmin())
+            var showMenuItem = sender.TreeAlias == "content";
+            var strNodeId = e.NodeId;
+            var nodeId = default(int);
+            if (showMenuItem && int.TryParse(strNodeId, out nodeId))
             {
-                var menuItem = new MenuItem("UserGroupPermissions", "User Group Permissions") {Icon = "vcard"};
+                showMenuItem = nodeId >= 0;
+            }
+            else
+            {
+                showMenuItem = false;
+            }
+
+            // Check permissions for non-admin users.
+            if (showMenuItem && !currentUser.IsAdmin())
+            {
+                showMenuItem = false;
+                var userService = ApplicationContext.Current.Services.UserService;
+                var permissions = userService.GetPermissions(currentUser, nodeId);
+                var letter = MenuActions.UserGroupPermissions.Instance.Letter.ToString();
+                if(permissions.Any(x => x.AssignedPermissions.InvariantContains(letter)))
+                {
+                    showMenuItem = true;
+                }
+            }
+
+            // Add a custom menu item in the content tree.
+            if (showMenuItem)
+            {
+
+                var menuItem = new MenuItem("UserGroupPermissions", "User Group Permissions")
+                {
+                    Icon = "vcard"
+                };
 
                 menuItem.LaunchDialogUrl("/App_Plugins/UserGroupPermissions/Dialogs/SetUserGroupPermissions.aspx?id=" + e.NodeId, "User Group Permissions");
 
@@ -39,6 +71,8 @@ namespace UserGroupPermissions.Events
                 }
 
             }
+
         }
+
     }
 }
