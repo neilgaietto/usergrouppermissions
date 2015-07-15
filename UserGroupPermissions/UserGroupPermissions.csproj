@@ -100,7 +100,7 @@
     <Content Include="Binaries\Umbraco.Core.dll" />
     <Content Include="Binaries\umbraco.DataLayer.dll" />
     <Content Include="Binaries\umbraco.dll" />
-    <Content Include="App_Plugins\UserGroupPermissions\Dialogs\SetUsergroupPermissions.aspx" />
+    <Content Include="App_Plugins\UserGroupPermissions\Dialogs\SetUserGroupPermissions.aspx" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -111,14 +111,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App_Plugins\UserGroupPermissions\package.manifest" />
-    <Compile Include="App_Plugins\UserGroupPermissions\Dialogs\SetUsergroupPermissions.aspx.manualDesigner.cs">
-      <DependentUpon>SetUsergroupPermissions.aspx</DependentUpon>
+    <Compile Include="App_Plugins\UserGroupPermissions\Dialogs\SetUserGroupPermissions.aspx.manualDesigner.cs">
+      <DependentUpon>SetUserGroupPermissions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Businesslogic\Languagefiles.cs" />
     <Compile Include="Businesslogic\UserTypePermissionsService.cs" />
-    <Compile Include="App_Plugins\UserGroupPermissions\Dialogs\SetUsergroupPermissions.aspx.cs">
-      <DependentUpon>SetUsergroupPermissions.aspx</DependentUpon>
+    <Compile Include="App_Plugins\UserGroupPermissions\Dialogs\SetUserGroupPermissions.aspx.cs">
+      <DependentUpon>SetUserGroupPermissions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Events\AddUserGroupPermissionToContextMenu.cs" />

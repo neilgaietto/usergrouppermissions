@@ -1,4 +1,4 @@
-﻿<%@ Page MasterPageFile="~/umbraco/masterpages/umbracoDialog.Master"  Language="C#" AutoEventWireup="true" CodeBehind="SetUsergroupPermissions.aspx.cs" Inherits="UserGroupPermissions.Dialogs.SetUsergroupPermissions" %>
+﻿<%@ Page MasterPageFile="~/umbraco/masterpages/umbracoDialog.Master"  Language="C#" AutoEventWireup="true" CodeBehind="SetUserGroupPermissions.aspx.cs" Inherits="UserGroupPermissions.Dialogs.SetUserGroupPermissions" %>
 <%@ Register TagPrefix="ugp" Namespace="umbraco.uicontrols" Assembly="controls" %>
 <%-- "Borrowed" from the core: https://github.com/umbraco/Umbraco-CMS/blob/7c4a189aa3cf583954defd9c43a3e55e325f2c3f/src/Umbraco.Web.UI/umbraco/dialogs/cruds.aspx --%>
 
@@ -19,7 +19,7 @@
     </div>
     <asp:PlaceHolder runat="server" ID="phButtons">
         <div class="umb-dialog-footer btn-toolbar umb-btn-toolbar">
-            <a href="#" class="btn btn-link" onclick="UmbClientMgr.closeModalWindow()"><%=umbraco.ui.Text("general", "cancel")%></a>  
+            <a href="#" class="btn btn-link" onclick="UmbClientMgr.closeModalWindow()"><%=umbraco.ui.Text("general", "cancel")%></a>
             <asp:Button ID="btnUpdate" runat="server" CssClass="btn btn-primary" OnClick="btnUpdate_Click"></asp:Button>
         </div>
     </asp:PlaceHolder>

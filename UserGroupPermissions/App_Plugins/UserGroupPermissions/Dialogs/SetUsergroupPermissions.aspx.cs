@@ -22,14 +22,14 @@ namespace UserGroupPermissions.Dialogs
     /// <remarks>
     /// "Borrowed" from the core: https://github.com/umbraco/Umbraco-CMS/blob/release-7.2.6/src/Umbraco.Web/umbraco.presentation/umbraco/dialogs/cruds.aspx.cs
     /// </remarks>
-    public partial class SetUsergroupPermissions : UmbracoEnsuredPage
+    public partial class SetUserGroupPermissions : UmbracoEnsuredPage
     {
         private ArrayList permissions = new ArrayList();
         private IContent node;
 
         private readonly UserTypePermissionsService _userTypePermissionsService;
 
-        public SetUsergroupPermissions()
+        public SetUserGroupPermissions()
         {
             _userTypePermissionsService = new UserTypePermissionsService();
         }
@@ -39,17 +39,11 @@ namespace UserGroupPermissions.Dialogs
             var service = ApplicationContext.Services.TextService;
             var culture = CultureInfo.GetCultureInfo(GlobalSettings.DefaultUILanguage);
             btnUpdate.Text = service.Localize("update", culture);
-            pane_form.Text = "Set Usergroup permissions for the page " + node.Name;
+            pane_form.Text = "Set user group permissions for the page " + node.Name;
         }
 
-       
-        #region Web Form Designer generated code
         override protected void OnInit(EventArgs e)
         {
-            //
-            // CODEGEN: This call is required by the ASP.NET Web Form Designer.
-            //
-            InitializeComponent();
             base.OnInit(e);
 
             var textService = ApplicationContext.Services.TextService;
@@ -80,6 +74,9 @@ namespace UserGroupPermissions.Dialogs
                 }
             }
             ht.Rows.Add(captions);
+
+            // Would like to replace the call to Action.GetAll(), but this is currently
+            // my best option: https://our.umbraco.org/forum/umbraco-7/developing-umbraco-7-packages/67584-replacement-for-umbracobusinesslogicactionsactiongetall
             foreach (umbraco.interfaces.IAction a in umbraco.BusinessLogic.Actions.Action.GetAll())
             {
                 if (a.CanBePermissionAssigned)
@@ -119,18 +116,7 @@ namespace UserGroupPermissions.Dialogs
 
             phControls.Controls.Add(ht);
 
-            
         }
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
-        {
-
-        }
-        #endregion
 
         protected void btnUpdate_Click(object sender, System.EventArgs e)
         {
@@ -172,7 +158,7 @@ namespace UserGroupPermissions.Dialogs
 
                 if (ReplacePermissionsOnUsers.Checked)
                 {
-                    //Replace permissions on all users
+                    // Replace permissions on all users
                     _userTypePermissionsService.CopyPermissions(usertype, node);
                 }
             }
@@ -183,10 +169,10 @@ namespace UserGroupPermissions.Dialogs
 
             // Update feedback message
             feedback1.type = umbraco.uicontrols.Feedback.feedbacktype.success;
-            feedback1.Text = "Usergroup permissions saved ok";
+            feedback1.Text = "User group permissions saved successfully.";
             pane_form.Visible = false;
             phButtons.Visible = false;
-            
+
         }
     }
 }
