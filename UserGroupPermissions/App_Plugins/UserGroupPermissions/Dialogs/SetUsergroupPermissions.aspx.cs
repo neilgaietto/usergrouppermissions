@@ -2,10 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using umbraco;
+using umbraco.interfaces;
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Models.Membership;
@@ -62,8 +64,7 @@ namespace UserGroupPermissions.Dialogs
             HtmlTableRow captions = new HtmlTableRow();
             captions.Cells.Add(new HtmlTableCell());
 
-
-            foreach (IUserType userType in userService.GetAllUserTypes())
+            foreach (IUserType userType in userService.GetAllUserTypes().OrderBy(x => x.Name))
             {
                 if (userType.Id > 0 && userType.Alias != "admin")
                 {
@@ -77,7 +78,9 @@ namespace UserGroupPermissions.Dialogs
 
             // Would like to replace the call to Action.GetAll(), but this is currently
             // my best option: https://our.umbraco.org/forum/umbraco-7/developing-umbraco-7-packages/67584-replacement-for-umbracobusinesslogicactionsactiongetall
-            foreach (umbraco.interfaces.IAction a in umbraco.BusinessLogic.Actions.Action.GetAll())
+            var actions = umbraco.BusinessLogic.Actions.Action.GetAll()
+                .Cast<IAction>().OrderBy(x => NameForAction(x, user));
+            foreach (IAction a in actions)
             {
                 if (a.CanBePermissionAssigned)
                 {
@@ -97,13 +100,14 @@ namespace UserGroupPermissions.Dialogs
                         {
                             CheckBox c = new CheckBox();
                             c.ID = userType.Id + "_" + a.Letter;
-                            if (_userTypePermissionsService.GetPermissions(userType, node.Path).IndexOf(a.Letter) > -1)
-                                    c.Checked = true;
-                                HtmlTableCell cell = new HtmlTableCell();
-                                cell.Style.Add("text-align", "center");
-                                cell.Controls.Add(c);
-                                permissions.Add(c);
-                                hr.Cells.Add(cell);
+                            var hasPermission = _userTypePermissionsService
+                                .GetPermissions(userType, node.Path).IndexOf(a.Letter) > -1;
+                            c.Checked = hasPermission;
+                            HtmlTableCell cell = new HtmlTableCell();
+                            cell.Style.Add("text-align", "center");
+                            cell.Controls.Add(c);
+                            permissions.Add(c);
+                            hr.Cells.Add(cell);
                         }
 
                     }
@@ -174,5 +178,29 @@ namespace UserGroupPermissions.Dialogs
             phButtons.Visible = false;
 
         }
+
+        // Attempts to translation an action alias into a name in the user's current language.
+        private string NameForAction(IAction action, IUser currentUser)
+        {
+            var service = ApplicationContext.Services.TextService;
+            var culture = currentUser.GetUserCulture(service);
+            var alias = action.Alias;
+            var key = string.Format("actions/{0}", alias);
+            var localized = service.Localize(key, culture);
+            if (string.IsNullOrWhiteSpace(localized))
+            {
+                return alias;
+            }
+            else
+            {
+                if (localized.StartsWith("[") && localized.EndsWith("]"))
+                {
+                    return alias;
+                }
+            }
+            return localized;
+        }
+
     }
+
 }
