@@ -104,7 +104,6 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App_Plugins\UserGroupPermissions\package.manifest" />
     <Compile Include="App_Plugins\UserGroupPermissions\Dialogs\SetUserGroupPermissions.aspx.manualDesigner.cs">
       <DependentUpon>SetUserGroupPermissions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
