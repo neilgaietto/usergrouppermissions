@@ -55,6 +55,7 @@ namespace UserGroupPermissions.Dialogs
             node = contentService.GetById(nodeId);
             var user = Security.CurrentUser;
             var culture = user.GetUserCulture(textService);
+            var orderedUserTypes = userService.GetAllUserTypes().OrderBy(x => x.Name);
 
 
             HtmlTable ht = new HtmlTable();
@@ -64,7 +65,7 @@ namespace UserGroupPermissions.Dialogs
             HtmlTableRow captions = new HtmlTableRow();
             captions.Cells.Add(new HtmlTableCell());
 
-            foreach (IUserType userType in userService.GetAllUserTypes().OrderBy(x => x.Name))
+            foreach (IUserType userType in orderedUserTypes)
             {
                 if (userType.Id > 0 && userType.Alias != "admin")
                 {
@@ -93,7 +94,7 @@ namespace UserGroupPermissions.Dialogs
                     hr.Cells.Add(hc);
 
 
-                    foreach (IUserType userType in ApplicationContext.Services.UserService.GetAllUserTypes())
+                    foreach (IUserType userType in orderedUserTypes)
                     {
                         // Not disabled users and not system account
                         if (userType.Id > 0 && userType.Alias != "admin")
