@@ -116,6 +116,7 @@
       <DependentUpon>SetUserGroupPermissions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Controllers\UserGroupPermissionsController.cs" />
     <Compile Include="Events\AddApplyUserGroupPermissionsToContextMenu.cs" />
     <Compile Include="Events\AddUserGroupPermissionToContextMenu.cs" />
     <Compile Include="Events\InstallLanguagesKeys.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="ExtensionMethods\UserExtensions.cs" />
     <Compile Include="ExtensionMethods\UserTypeExtensions.cs" />
     <Compile Include="MenuActions\UserGroupPermissions.cs" />
+    <Compile Include="Models\ApplyRequest.cs" />
     <Compile Include="Models\UserTypePermissions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
