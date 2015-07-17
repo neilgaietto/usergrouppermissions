@@ -110,7 +110,7 @@
       <DependentUpon>SetUserGroupPermissions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Businesslogic\Languagefiles.cs" />
+    <Compile Include="Businesslogic\LanguageFiles.cs" />
     <Compile Include="Businesslogic\UserTypePermissionsService.cs" />
     <Compile Include="App_Plugins\UserGroupPermissions\Dialogs\SetUserGroupPermissions.aspx.cs">
       <DependentUpon>SetUserGroupPermissions.aspx</DependentUpon>

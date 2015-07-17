@@ -7,7 +7,7 @@ namespace UserGroupPermissions.Events
     {
         public InstallLanguagesKeys()
         {
-            Languagefiles.InstallLanguageKey("UserGroupPermissions", "User Group Permissions");
+            LanguageFiles.InstallLanguageKey("UserGroupPermissions", "User Group Permissions");
         }
     }
 }

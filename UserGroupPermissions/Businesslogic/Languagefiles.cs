@@ -7,7 +7,7 @@ using Umbraco.Core;
 
 namespace UserGroupPermissions.Businesslogic
 {
-    public class Languagefiles
+    public class LanguageFiles
     {
         /// <summary>
         /// Loop through the language config folder and add language nodes to the language files
