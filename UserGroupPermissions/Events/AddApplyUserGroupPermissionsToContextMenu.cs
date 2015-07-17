@@ -16,7 +16,7 @@ namespace UserGroupPermissions.Events
         void TreeControllerBase_MenuRendering(TreeControllerBase sender, MenuRenderingEventArgs e)
         {
             var user = sender.Security.CurrentUser;
-            var path = "/App_Plugins/UserGroupPermissions/Views/apply-user-group-permissions.html";
+            var path = "/App_Plugins/UserGroupPermissions/Views/ApplyUserGroupPermissions.html";
             var title = "Apply User Group Permissions";
             var treeType = e.QueryStrings.Get("treeType");
             var section = e.QueryStrings.Get("section");

@@ -1,0 +1,10 @@
+﻿<div class="umb-dialog umb-pane" ng-controller="UGP.ApplyUserGroupPermissions">
+    <div class="umb-dialog-body">
+        <p class="umb-abstract">
+            Are you sure you want to apply group permissions for user {{selectedUserName}} to
+            all nodes that have user group permissions specified?
+        </p>
+        <umb-confirm on-confirm="performApply" on-cancel="cancel">
+        </umb-confirm>
+    </div>
+</div>

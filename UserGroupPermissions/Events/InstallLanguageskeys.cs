@@ -3,9 +3,9 @@ using UserGroupPermissions.Businesslogic;
 
 namespace UserGroupPermissions.Events
 {
-    public class InstallLanguageskeys : ApplicationEventHandler 
+    public class InstallLanguagesKeys : ApplicationEventHandler 
     {
-        public InstallLanguageskeys()
+        public InstallLanguagesKeys()
         {
             Languagefiles.InstallLanguageKey("UserGroupPermissions", "User Group Permissions");
         }

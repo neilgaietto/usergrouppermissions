@@ -93,7 +93,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Plugins\UserGroupPermissions\Views\apply-user-group-permissions.html" />
+    <Content Include="App_Plugins\UserGroupPermissions\Controllers\ApplyUserGroupPermissions.js" />
+    <Content Include="App_Plugins\UserGroupPermissions\Views\ApplyUserGroupPermissions.html" />
     <Content Include="Binaries\businesslogic.dll" />
     <Content Include="Binaries\cms.dll" />
     <Content Include="Binaries\controls.dll" />
@@ -117,7 +118,7 @@
     </Compile>
     <Compile Include="Events\AddApplyUserGroupPermissionsToContextMenu.cs" />
     <Compile Include="Events\AddUserGroupPermissionToContextMenu.cs" />
-    <Compile Include="Events\InstallLanguageskeys.cs" />
+    <Compile Include="Events\InstallLanguagesKeys.cs" />
     <Compile Include="Events\RegisterDatabase.cs" />
     <Compile Include="Events\UserSaved.cs" />
     <Compile Include="ExtensionMethods\UserExtensions.cs" />
@@ -125,6 +126,9 @@
     <Compile Include="MenuActions\UserGroupPermissions.cs" />
     <Compile Include="Models\UserTypePermissions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Plugins\UserGroupPermissions\package.manifest" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
