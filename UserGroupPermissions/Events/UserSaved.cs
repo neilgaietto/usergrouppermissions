@@ -1,54 +1,80 @@
-﻿using System;
-using System.Linq;
-using umbraco.cms.businesslogic;
-using UserGroupPermissions.Businesslogic;
-using Umbraco.Core;
-using Umbraco.Core.Events;
-using Umbraco.Core.Models;
-using Umbraco.Core.Models.Membership;
-using Umbraco.Core.Services;
-using User = umbraco.BusinessLogic.User;
-
-namespace UserGroupPermissions.Events
+﻿namespace UserGroupPermissions.Events
 {
+
+    // Namespaces.
+    using Businesslogic;
+    using Umbraco.Core;
+    using Umbraco.Core.Events;
+    using Umbraco.Core.Models;
+    using Umbraco.Core.Models.Membership;
+    using Umbraco.Core.Services;
+
+
+    /// <summary>
+    /// Handles user saved event.
+    /// </summary>
     public class UserSaved : ApplicationEventHandler
     {
 
+        #region Readonly Variables
+
         private readonly UserTypePermissionsService _userTypePermissionsService;
 
+        #endregion
+
+
+        #region Constructors
+
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
         public UserSaved()
         {
             _userTypePermissionsService = new UserTypePermissionsService();
-
             UserService.SavingUser += User_Saving;
-
-            //User.Saving += UserService.SavingUserSavingEventHandler(User_Saving);
         }
 
+        #endregion
+
+
+        #region Event Handlers
+
+        /// <summary>
+        /// User saving event.
+        /// </summary>
+        /// <remarks>
+        /// User is already saved but the object itself is not updated yet.
+        /// </remarks>
         void User_Saving(IUserService service, SaveEventArgs<IUser> e)
         {
-            //User is already saved but the object itself is not updated yet.
-
-            var savedEntity = e.SavedEntities.FirstOrDefault();
-
-            if (savedEntity != null)
+            foreach (var savedEntity in e.SavedEntities)
             {
-                if (!savedEntity.IsNewEntity())
+                if (savedEntity != null)
                 {
-                    // if entity is not new get the old version to check against.
-                    IUser savedUser = service.GetUserById(savedEntity.Id);
-                    if (savedEntity.UserType.Alias != savedUser.UserType.Alias)
+                    if (!savedEntity.IsNewEntity())
                     {
-                        //Only save when usertype is changed (CopyPermissionsForSingleUser will not allow over saving of admin users)
-                        _userTypePermissionsService.CopyPermissionsForSingleUser(savedUser);
+
+                        // Update permissions for old users if the user type changes.
+                        IUser savedUser = service.GetUserById(savedEntity.Id);
+                        if (savedEntity.UserType.Alias != savedUser.UserType.Alias)
+                        {
+                            _userTypePermissionsService.CopyPermissionsForSingleUser(savedUser);
+                        }
+
                     }
-                }
-                else
-                {
-                    //user is new so copy permissions
-                    _userTypePermissionsService.CopyPermissionsForSingleUser(savedEntity);
+                    else
+                    {
+
+                        // Set permissions for new users.
+                        _userTypePermissionsService.CopyPermissionsForSingleUser(savedEntity);
+
+                    }
                 }
             }
         }
+
+        #endregion
+
     }
+
 }

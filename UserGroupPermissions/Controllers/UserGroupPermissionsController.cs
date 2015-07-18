@@ -2,6 +2,7 @@
 {
 
     // Namespaces.
+    using Businesslogic;
     using Models;
     using System.Web.Http;
     using Umbraco.Web;
@@ -19,6 +20,20 @@
     public class UserGroupPermissionsController : UmbracoAuthorizedJsonController
     {
 
+        #region Constants
+
+        private const string UserNotFound = "The specified user was not found.";
+
+        #endregion
+
+
+        #region Readonly Variables
+
+        private readonly UserTypePermissionsService _userTypePermissionsService;
+
+        #endregion
+
+
         #region Constructors
 
         /// <summary>
@@ -35,6 +50,7 @@
         public UserGroupPermissionsController(UmbracoContext umbracoContext)
             : base(umbracoContext)
         {
+            _userTypePermissionsService = new UserTypePermissionsService();
         }
 
         #endregion
@@ -52,13 +68,46 @@
         [HttpPost]
         public object ApplyAllGroupPermissions(ApplyRequest request)
         {
+
+            // Variables.
+            var failureReason = default(string);
             var userService = Services.UserService;
             var user = userService.GetUserById(request.UserId);
-            //TODO: ...
-            return new
+            var success = true;
+
+
+            // User found?
+            if (user == null)
             {
-                Success = true
-            };
+                success = false;
+                failureReason = UserNotFound;
+            }
+
+
+            // Copy permissions.
+            if (success)
+            {
+                _userTypePermissionsService.CopyPermissionsForSingleUser(user);
+            }
+
+
+            // Indicate success or failure.
+            if (success)
+            {
+                return new
+                {
+                    Success = true
+                };
+            }
+            else
+            {
+                return new
+                {
+                    Success = false,
+                    Reason = failureReason
+                };
+            }
+
         }
 
         #endregion

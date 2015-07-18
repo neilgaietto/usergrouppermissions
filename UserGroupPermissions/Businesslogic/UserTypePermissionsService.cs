@@ -1,30 +1,47 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using Umbraco.Core;
-using Umbraco.Core.Models;
-using Umbraco.Core.Models.Membership;
-using Umbraco.Core.Persistence;
-using UserGroupPermissions.ExtensionMethods;
-using UserGroupPermissions.Models;
-
-namespace UserGroupPermissions.Businesslogic
+﻿namespace UserGroupPermissions.Businesslogic
 {
 
+    // Namespaces.
+    using ExtensionMethods;
+    using Models;
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Runtime.CompilerServices;
+    using Umbraco.Core;
+    using Umbraco.Core.Models;
+    using Umbraco.Core.Models.Membership;
+    using Umbraco.Core.Persistence;
+
+
+    /// <summary>
+    /// Service to help with user permissions.
+    /// </summary>
     public class UserTypePermissionsService
     {
 
+        #region Readonly Variables
+
         private readonly Database _sqlHelper;
 
+        #endregion
 
+
+        #region Constructors
+
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
         public UserTypePermissionsService()
         {
             _sqlHelper = ApplicationContext.Current.DatabaseContext.Database;
         }
 
+        #endregion
+
+
+        #region Public Methods
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void Insert(IUserType userType, IContent node, char permissionKey)
@@ -49,6 +66,7 @@ namespace UserGroupPermissions.Businesslogic
 
         }
 
+
         /// <summary>
         /// Returns the permissions for a user
         /// </summary>
@@ -62,6 +80,7 @@ namespace UserGroupPermissions.Businesslogic
 
             return items;
         }
+
 
         public string GetPermissions(IUserType userType, string path)
         {
@@ -89,6 +108,7 @@ namespace UserGroupPermissions.Businesslogic
             return defaultPermissions;
         }
 
+
         /// <summary>
         /// Returns the permissions for a node
         /// </summary>
@@ -104,30 +124,49 @@ namespace UserGroupPermissions.Businesslogic
 
 
         /// <summary>
-        /// Copies the usertype permissions for single user 
+        /// Copies the user type permissions for single user.
         /// </summary>
         /// <param name="user">The user.</param>
         public void CopyPermissionsForSingleUser(IUser user)
         {
             if (!user.IsAdmin() && !user.Disabled())
             {
+
+                // Variables.
                 var permissions = GetUserTypePermissions(user.UserType);
                 var contentService = ApplicationContext.Current.Services.ContentService;
+                var nodesById = new Dictionary<int, IContent>();
+                var node = default(IContent);
+                var userId = new [] { user.Id };
 
+
+                // Apply each permission.
                 foreach (var permission in permissions)
                 {
-                    var node = contentService.GetById(permission.NodeId);
+
+                    // Get node (try cache first).
+                    if (!nodesById.TryGetValue(permission.NodeId, out node))
+                    {
+                        node = contentService.GetById(permission.NodeId);
+                        nodesById[permission.NodeId] = node;
+                    }
+
+
+                    // Apply permission to node.
                     if (!string.IsNullOrWhiteSpace(permission.PermissionId) && node != null)
                     {
-                        ApplicationContext.Current.Services.ContentService.AssignContentPermission(node,
-                            permission.PermissionId[0], new int[] { user.Id });
+                        var permissionId = permission.PermissionId[0];
+                        contentService.AssignContentPermission(node, permissionId, userId);
                     }
+
                 }
+
             }
         }
 
+
         /// <summary>
-        /// Copies all  permissions to related users of the usertype
+        /// Copies all permissions to related users of the user type.
         /// </summary>
         /// <param name="userType">Type of the user.</param>
         /// <param name="node">The node.</param>
@@ -145,6 +184,7 @@ namespace UserGroupPermissions.Businesslogic
             }
         }
 
+
         /// <summary>
         /// Delets all permissions for the node/user combination
         /// </summary>
@@ -159,6 +199,7 @@ namespace UserGroupPermissions.Businesslogic
 
         }
 
+
         /// <summary>
         /// deletes all permissions for the user
         /// </summary>
@@ -171,6 +212,7 @@ namespace UserGroupPermissions.Businesslogic
 
         }
 
+
         public void DeletePermissions(int userTypeId, int[] iNodeIDs)
         {
                 
@@ -180,10 +222,12 @@ namespace UserGroupPermissions.Businesslogic
 
         }
 
+
         private string Converter(int from)
         {
             return from.ToString();
         }
+
 
         /// <summary>
         /// delete all permissions for this node
@@ -193,6 +237,7 @@ namespace UserGroupPermissions.Businesslogic
         {
             _sqlHelper.Execute("delete from UserTypePermissions where NodeId = @0", node.Id);
         }
+
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void UpdateCruds(IUserType userType, IContent node, string permissions)
@@ -208,5 +253,9 @@ namespace UserGroupPermissions.Businesslogic
                     Insert(userType, node, c);
             }
         }
+
+        #endregion
+
     }
+
 }
