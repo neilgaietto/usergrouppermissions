@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<language>
+  <creator>
+    <name>The User Group Permissions Team</name>
+    <link>https://our.umbraco.org/projects/backoffice-extensions/user-group-permissions/</link>
+  </creator>
+  <area alias="actions">
+    <key alias="UserGroupPermissions">User Group Permissions</key>
+  </area>
+</language>
