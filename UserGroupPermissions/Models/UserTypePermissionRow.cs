@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Umbraco.Core.Persistence;
-
-namespace UserGroupPermissions.Models
+﻿namespace UserGroupPermissions.Models
 {
+    using Umbraco.Core.Persistence;
     [TableName("UserTypePermissions")]
-    public class UserTypePermission
+    public class UserTypePermissionRow
     {
         public int NodeId { get; set; }
         public int UserTypeId { get; set; }

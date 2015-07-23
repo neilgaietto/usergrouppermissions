@@ -18,6 +18,10 @@ namespace UserGroupPermissions.Events
         void TreeControllerBase_MenuRendering(TreeControllerBase sender, MenuRenderingEventArgs e)
         {
 
+            // Variables.
+            var path = "/App_Plugins/UserGroupPermissions/Views/SetUserGroupPermissions.html";
+            var title = "User Group Permissions";
+
             // Initial check (in content tree and on a node).
             IUser currentUser = sender.Security.CurrentUser;
             var showMenuItem = sender.TreeAlias == "content";
@@ -54,7 +58,7 @@ namespace UserGroupPermissions.Events
                     Icon = "vcard"
                 };
 
-                menuItem.LaunchDialogUrl("/App_Plugins/UserGroupPermissions/Dialogs/SetUserGroupPermissions.aspx?id=" + e.NodeId, "User Group Permissions");
+                menuItem.LaunchDialogView(path, title);
 
                 var permissionsIndex = e.Menu.Items.FindIndex(x =>
                     "Permissions".InvariantEquals(x.Name) ||

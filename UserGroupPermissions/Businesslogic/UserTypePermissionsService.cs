@@ -52,7 +52,7 @@
             bool exists = _sqlHelper.Fetch<int>("SELECT UserTypeId FROM UserTypePermissions WHERE UserTypeId = @0 AND NodeId = @1 AND PermissionId = @2", userType.Id, node.Id, permissionKey.ToString()).Any();
             if (!exists)
             {
-                var newPerms = new UserTypePermission
+                var newPerms = new UserTypePermissionRow
                 {
                     NodeId = node.Id,
                     PermissionId = permissionKey.ToString(),
@@ -72,10 +72,10 @@
         /// </summary>
         /// <param name="userType"></param>
         /// <returns></returns>
-        public IEnumerable<UserTypePermission> GetUserTypePermissions(IUserType userType)
+        public IEnumerable<UserTypePermissionRow> GetUserTypePermissions(IUserType userType)
         {
 
-            var items = _sqlHelper.Fetch<UserTypePermission>(
+            var items = _sqlHelper.Fetch<UserTypePermissionRow>(
                 "select * from UserTypePermissions  where UserTypeId = @0 order by NodeId", userType.Id);
 
             return items;
@@ -114,9 +114,9 @@
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        public IEnumerable<UserTypePermission> GetNodePermissions(IContent node)
+        public IEnumerable<UserTypePermissionRow> GetNodePermissions(IContent node)
         {
-            var items = _sqlHelper.Fetch<UserTypePermission>(
+            var items = _sqlHelper.Fetch<UserTypePermissionRow>(
                 "select * from UserTypePermissions where NodeId = @0 order by nodeId", node.Id);
 
             return items;

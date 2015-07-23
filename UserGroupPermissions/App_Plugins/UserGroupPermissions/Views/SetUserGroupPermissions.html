@@ -1,0 +1,49 @@
+﻿<div class="umb-dialog umb-pane" ng-controller="UGP.SetUserGroupPermissions">
+    <div class="umb-dialog-body">
+        <div ng-if="showSelection">
+            <p class="umb-abstract">
+                Set user group permissions for the page "{{pageName}}".
+            </p>
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <th ng-repeat="userType in userTypes">
+                            {{userType.Label}}
+                        </th>
+                    </tr>
+                    <tr ng-repeat="permission in permissions">
+                        <td class="guiDialogTinyMark ugp-small-table-header">
+                            {{permission.Label}}
+                        </td>
+                        <td ng-repeat="userType in permission.UserTypes">
+                            <input type="checkbox" ng-model="userType.HasPermission" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div>
+                <input id="{{applyPermissionsId}}" type="checkbox" ng-model="userOptions.applyPermissions" />
+                <label for="{{applyPermissionsId}}">Replace permissions on all existing users for this node?</label>
+            </div>
+        </div>
+        <p class="umb-abstract" ng-if="showFailure">
+            {{failureMessage}}
+        </p>
+        <p class="umb-abstract" ng-if="showSuccess">
+            {{successMessage}}
+        </p>
+        <p class="umb-abstract" ng-if="showProgress">
+            {{processingMessage}}
+        </p>
+        <div ng-if="showConfirmButtons">
+            <umb-confirm on-confirm="updatePermissions" on-cancel="cancel">
+            </umb-confirm>
+        </div>
+    </div>
+    <div class="umb-dialog-footer btn-toolbar umb-btn-toolbar" ng-if="showDoneButton">
+        <button class="btn" ng-click="closeDialog()">
+            <localize key="defaultdialogs_closeThisWindow">Close this window</localize>
+        </button>
+    </div>
+</div>

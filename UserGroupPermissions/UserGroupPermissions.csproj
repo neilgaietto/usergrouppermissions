@@ -93,7 +93,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Plugins\UserGroupPermissions\Controllers\SetUserGroupPermissions.js" />
     <Content Include="App_Plugins\UserGroupPermissions\Controllers\ApplyUserGroupPermissions.js" />
+    <Content Include="App_Plugins\UserGroupPermissions\Styles\UserGroupPermissions.css" />
+    <Content Include="App_Plugins\UserGroupPermissions\Views\SetUserGroupPermissions.html" />
     <Content Include="App_Plugins\UserGroupPermissions\Views\ApplyUserGroupPermissions.html" />
     <Content Include="Binaries\businesslogic.dll" />
     <Content Include="Binaries\cms.dll" />
@@ -102,20 +105,11 @@
     <Content Include="Binaries\Umbraco.Core.dll" />
     <Content Include="Binaries\umbraco.DataLayer.dll" />
     <Content Include="Binaries\umbraco.dll" />
-    <Content Include="App_Plugins\UserGroupPermissions\Dialogs\SetUserGroupPermissions.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Plugins\UserGroupPermissions\Dialogs\SetUserGroupPermissions.aspx.manualDesigner.cs">
-      <DependentUpon>SetUserGroupPermissions.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Businesslogic\LanguageFiles.cs" />
     <Compile Include="Businesslogic\UserTypePermissionsService.cs" />
-    <Compile Include="App_Plugins\UserGroupPermissions\Dialogs\SetUserGroupPermissions.aspx.cs">
-      <DependentUpon>SetUserGroupPermissions.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Controllers\UserGroupPermissionsController.cs" />
     <Compile Include="Events\AddApplyUserGroupPermissionsToContextMenu.cs" />
     <Compile Include="Events\AddUserGroupPermissionToContextMenu.cs" />
@@ -125,8 +119,11 @@
     <Compile Include="ExtensionMethods\UserExtensions.cs" />
     <Compile Include="ExtensionMethods\UserTypeExtensions.cs" />
     <Compile Include="MenuActions\UserGroupPermissions.cs" />
+    <Compile Include="Models\GetPermissionsRequest.cs" />
     <Compile Include="Models\ApplyRequest.cs" />
-    <Compile Include="Models\UserTypePermissions.cs" />
+    <Compile Include="Models\SetPermissionsRequest.cs" />
+    <Compile Include="Models\UserTypePermission.cs" />
+    <Compile Include="Models\UserTypePermissionRow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

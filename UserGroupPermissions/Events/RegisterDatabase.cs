@@ -22,7 +22,7 @@ namespace UserGroupPermissions.Events
             if (!db.TableExist("UserTypePermissions"))
             {
                 //Create DB table - and set overwrite to false
-                db.CreateTable<UserTypePermission>(false);
+                db.CreateTable<UserTypePermissionRow>(false);
             }
         }
 
