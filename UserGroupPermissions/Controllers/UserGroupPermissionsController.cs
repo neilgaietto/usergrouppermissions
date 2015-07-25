@@ -196,8 +196,8 @@
         /// <returns>
         /// The permissions.
         /// </returns>
-        [HttpPost]
-        public object GetGroupPermissions(GetPermissionsRequest request)
+        [HttpGet]
+        public object GetGroupPermissions([FromUri] GetPermissionsRequest request)
         {
 
             // Variables.

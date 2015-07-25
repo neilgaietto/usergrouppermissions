@@ -8,12 +8,12 @@
     $scope.processingMessage = "Processing request. Please wait.";
     $scope.successMessage = "Operation successful.";
     $scope.failureMessage = "An unknown error occurred.";
-    $scope.showSelection = true;
-    $scope.showConfirmButtons = true;
+    $scope.showSelection = false;
+    $scope.showConfirmButtons = false;
     $scope.showSuccess = false;
     $scope.showFailure = false;
     $scope.showDoneButton = false;
-    $scope.showProgress = false;
+    $scope.showProgress = true;
     $scope.applyPermissionsId = "ugp-apply-permissions-" + Math.random().toString().replace(".", "");
     $scope.userTypes = [];
     $scope.permissions = [];
@@ -22,19 +22,16 @@
     function getPermissions() {
 
         // Variables.
-        $scope.showProgress = true;
         var id = parseInt($scope.currentNode.id);
         var url = "/umbraco/backoffice/UGP/UserGroupPermissions/GetGroupPermissions";
-        var data = { "NodeId": id };
-        var strData = JSON.stringify(data);
         var options = {
-            headers: {
-                "Content-Type": "application/json"
+            params: {
+                "NodeId": id
             }
         };
 
         // Request user type permissions from server.
-        $http.post(url, strData, options).success(function (data) {
+        $http.get(url, options).success(function (data) {
 
             // Set scope variables based on permissions.
             $scope.userTypes = data.UserTypePermissions;
@@ -57,6 +54,8 @@
 
             // Update UI.
             $scope.showProgress = false;
+            $scope.showSelection = true;
+            $scope.showConfirmButtons = true;
 
         });
     }
