@@ -1,4 +1,4 @@
-# Ignore Umbraco folders (Generated folders created by Umbraco)
+# Ignore Umbraco folders (Generated folders created by Umbraco).
 ClientDependency/
 TEMP/
 Logs/
@@ -7,9 +7,12 @@ ExamineIndexes/
 bin/
 obj/
 
-# Ignore Umbraco content cache file
+# Ignore Umbraco content cache file.
 umbraco.config
 
 # User-specific files
 *.suo
 *.csproj.user
+
+# Ignore NuGet files.
+/UserGroupPermissions/packages/
