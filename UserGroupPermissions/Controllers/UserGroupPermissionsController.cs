@@ -197,6 +197,7 @@
         /// The permissions.
         /// </returns>
         [HttpGet]
+        [DisableBrowserCache]
         public object GetGroupPermissions([FromUri] GetPermissionsRequest request)
         {
 

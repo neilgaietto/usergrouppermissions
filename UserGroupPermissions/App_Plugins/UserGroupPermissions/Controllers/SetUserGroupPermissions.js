@@ -25,8 +25,11 @@
         var id = parseInt($scope.currentNode.id);
         var url = "/umbraco/backoffice/UGP/UserGroupPermissions/GetGroupPermissions";
         var options = {
+            cache: false,
             params: {
-                "NodeId": id
+                "NodeId": id,
+                // Cache buster ensures requests aren't cached.
+                "CacheBuster": Math.random()
             }
         };
 
