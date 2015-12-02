@@ -73,14 +73,14 @@
             var permission = $scope.permissions[i];
             for (var j = 0; j < permission.UserTypes.length; j++) {
                 var userType = permission.UserTypes[j];
+                var existingUserType = userTypePermissions[userType.UserTypeId];
+                existingUserType = existingUserType || {
+                    UserTypeId: userType.UserTypeId,
+                    Permissions: []
+                };
+                userTypePermissions[userType.UserTypeId] = existingUserType;
                 if (userType.HasPermission) {
-                    var existingUserType = userTypePermissions[userType.UserTypeId];
-                    existingUserType = existingUserType || {
-                        UserTypeId: userType.UserTypeId,
-                        Permissions: []
-                    };
                     existingUserType.Permissions.push(permission.Letter);
-                    userTypePermissions[userType.UserTypeId] = existingUserType;
                 }
             }
         }
@@ -89,7 +89,10 @@
         var dataPermissions = [];
         for (var i = 0; i < $scope.permissions[0].UserTypes.length; i++) {
             var userTypeId = $scope.permissions[0].UserTypes[i].UserTypeId;
-            dataPermissions.push(userTypePermissions[userTypeId]);
+            var permission = userTypePermissions[userTypeId];
+            if (permission) {
+                dataPermissions.push(userTypePermissions[userTypeId]);
+            }
         }
 
         // Variables.
