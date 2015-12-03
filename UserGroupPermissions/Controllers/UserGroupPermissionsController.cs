@@ -141,6 +141,7 @@
             var ignoreBase = request.IgnoreBasePermissions;
             var node = contentService.GetById(nodeId);
             var permissionsByTypeId = new Dictionary<int, string[]>();
+            var assignablePermissions = ActionsResolver.Current.Actions.Where(x => x.CanBePermissionAssigned).Select(x=>x.Letter);
 
 
             // Add all user types to dictionary.
@@ -149,19 +150,20 @@
                 //check if any permissions were set
                 var newUserTypePermissions = userPermissions.FirstOrDefault(x => x.UserTypeId == u.Id);
                 if (newUserTypePermissions == null) continue;
+                var existingPermissions = u.Permissions.Where(x => assignablePermissions.Contains(x[0])).ToList();
 
                 //grab new permissions
                 var permissions = newUserTypePermissions.Permissions.ToList();
-                if (!permissions.Any() && !(ignoreBase && !u.Permissions.Any()))
+                if (!permissions.Any() && !(ignoreBase && !existingPermissions.Any()))
                 {
                     //no permissions set means disable all permissions
                     permissions.Add("-");
                 }
 
-                //if we are ignoring base then remove set base
-                if (ignoreBase)
+                //if we ignore when set permissions match base permissions
+                if (ignoreBase && permissions.All(x => existingPermissions.Contains(x)) && existingPermissions.All(x => permissions.Contains(x)))
                 {
-                    permissions = permissions.Where(x => !u.Permissions.Contains(x)).ToList();
+                    permissions = new List<string>();
                 }
 
 
@@ -180,7 +182,7 @@
 
 
                 // Update user type permissions.
-                _userTypePermissionsService.UpdateCruds(userType, node, pair.Value.Select(x=>x[0]));
+                _userTypePermissionsService.UpdateCruds(userType, node, pair.Value.Select(x => x[0]));
 
 
                 // Update user permissions?
