@@ -87,7 +87,7 @@
 
             string defaultPermissions = String.Join(string.Empty, userType.Permissions);
             
-            var allUserPermissions = GetUserTypePermissions(userType).GroupBy(x => x.NodeId);
+            var allUserPermissions = GetUserTypePermissions(userType).GroupBy(x => x.NodeId).ToList();
 
             foreach (string nodeId in path.Split(','))
             {

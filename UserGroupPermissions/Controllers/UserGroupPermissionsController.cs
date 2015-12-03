@@ -210,8 +210,9 @@
             var orderedUserTypes = userService.GetAllUserTypes()
                 .Where(x => x.Id > 0 && !"admin".InvariantEquals(x.Alias))
                 .OrderBy(x => x.Name);
-            var orderedActions = umbraco.BusinessLogic.Actions.Action.GetAll()
-                .Cast<IAction>().Where(x => x.CanBePermissionAssigned)
+            
+            var orderedActions = ActionsResolver.Current.Actions
+                .Where(x => x.CanBePermissionAssigned)
                 .OrderBy(x => NameForAction(x, user));
             var permissionsByType = new Dictionary<int, string>();
             var actionTranslations = new Dictionary<string, string>();
