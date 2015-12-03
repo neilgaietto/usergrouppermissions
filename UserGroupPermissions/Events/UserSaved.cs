@@ -58,7 +58,7 @@
                         IUser savedUser = service.GetUserById(savedEntity.Id);
                         if (savedEntity.UserType.Alias != savedUser.UserType.Alias)
                         {
-                            _userTypePermissionsService.CopyPermissionsForSingleUser(savedUser);
+                            _userTypePermissionsService.CopyPermissionsForSingleUser(savedEntity);
                         }
 
                     }
