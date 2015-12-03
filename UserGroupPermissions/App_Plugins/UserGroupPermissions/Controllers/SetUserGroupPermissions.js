@@ -3,7 +3,8 @@
     // Variables used in the view.
     $scope.pageName = $scope.currentNode.name;
     $scope.userOptions = {
-        applyPermissions: false
+        applyPermissions: false,
+        ignoreBasePermissions: true
     };
     $scope.processingMessage = "Processing request. Please wait.";
     $scope.successMessage = "Operation successful.";
@@ -15,6 +16,7 @@
     $scope.showDoneButton = false;
     $scope.showProgress = true;
     $scope.applyPermissionsId = "ugp-apply-permissions-" + Math.random().toString().replace(".", "");
+    $scope.ignoreBasePermissionsId = "ugp-ignore-base-permissions-" + Math.random().toString().replace(".", "");
     $scope.userTypes = [];
     $scope.permissions = [];
 
@@ -101,6 +103,7 @@
         var data = {
             "NodeId": id,
             "ReplacePermissionsOnUsers": $scope.userOptions.applyPermissions,
+            "IgnoreBasePermissions": $scope.userOptions.ignoreBasePermissions,
             "UserTypePermissions": dataPermissions
         };
         var strData = JSON.stringify(data);

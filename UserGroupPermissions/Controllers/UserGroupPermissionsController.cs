@@ -138,6 +138,7 @@
             var contentService = ApplicationContext.Services.ContentService;
             var userPermissions = request.UserTypePermissions;
             var nodeId = request.NodeId;
+            var ignoreBase = request.IgnoreBasePermissions;
             var node = contentService.GetById(nodeId);
             var permissionsByTypeId = new Dictionary<int, string[]>();
 
@@ -145,28 +146,41 @@
             // Add all user types to dictionary.
             foreach (var u in userService.GetAllUserTypes())
             {
-                permissionsByTypeId[u.Id] = new string[] { };
+                //check if any permissions were set
+                var newUserTypePermissions = userPermissions.FirstOrDefault(x => x.UserTypeId == u.Id);
+                if (newUserTypePermissions == null) continue;
+
+                //grab new permissions
+                var permissions = newUserTypePermissions.Permissions.ToList();
+                if (!permissions.Any() && !(ignoreBase && !u.Permissions.Any()))
+                {
+                    //no permissions set means disable all permissions
+                    permissions.Add("-");
+                }
+
+                //if we are ignoring base then remove set base
+                if (ignoreBase)
+                {
+                    permissions = permissions.Where(x => !u.Permissions.Contains(x)).ToList();
+                }
+
+
+                //if we have any permissions set
+                permissionsByTypeId[u.Id] = permissions.ToArray();
+
             }
 
 
-            // Put permissions in dictionary.
-            foreach (var utp in userPermissions)
-            {
-                permissionsByTypeId[utp.UserTypeId] = utp.Permissions;
-            }
-
-
-            // Process each user type permission.
+            // Process each user type with permissions.
             foreach (var pair in permissionsByTypeId)
             {
 
                 // Variables.
-                var cruds = pair.Value.Any() ? string.Join(string.Empty, pair.Value) : "-";
                 var userType = userService.GetUserTypeById(pair.Key);
 
 
                 // Update user type permissions.
-                _userTypePermissionsService.UpdateCruds(userType, node, cruds);
+                _userTypePermissionsService.UpdateCruds(userType, node, pair.Value.Select(x=>x[0]));
 
 
                 // Update user permissions?
@@ -210,7 +224,7 @@
             var orderedUserTypes = userService.GetAllUserTypes()
                 .Where(x => x.Id > 0 && !"admin".InvariantEquals(x.Alias))
                 .OrderBy(x => x.Name);
-            
+
             var orderedActions = ActionsResolver.Current.Actions
                 .Where(x => x.CanBePermissionAssigned)
                 .OrderBy(x => NameForAction(x, user));

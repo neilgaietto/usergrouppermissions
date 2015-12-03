@@ -240,7 +240,7 @@
 
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public void UpdateCruds(IUserType userType, IContent node, string permissions)
+        public void UpdateCruds(IUserType userType, IContent node, IEnumerable<char> permissions)
         {
             // do not act on admin user types.
             if (userType.Alias != "admin")
@@ -249,7 +249,7 @@
                 DeletePermissions(userType, node);
 
                 // Loop through the permissions and create them
-                foreach (char c in permissions.ToCharArray())
+                foreach (char c in permissions)
                     Insert(userType, node, c);
             }
         }

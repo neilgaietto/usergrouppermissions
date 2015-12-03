@@ -5,5 +5,6 @@
         public int NodeId { get; set; }
         public UserTypePermission[] UserTypePermissions { get; set; }
         public bool ReplacePermissionsOnUsers { get; set; }
+        public bool IgnoreBasePermissions { get; set; }
     }
 }

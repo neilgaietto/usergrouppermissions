@@ -23,8 +23,12 @@
                 </tbody>
             </table>
             <div>
-                <input id="{{applyPermissionsId}}" type="checkbox" ng-model="userOptions.applyPermissions" />
+                <input id="{{applyPermissionsId}}" type="checkbox" ng-model="userOptions.applyPermissions"/>
                 <label for="{{applyPermissionsId}}">Replace permissions on all existing users for this node?</label>
+            </div>
+            <div>
+                <input id="{{ignoreBasePermissionsId}}" type="checkbox" ng-model="userOptions.ignoreBasePermissions" />
+                <label for="{{ignoreBasePermissionsId}}">Ignore setting permissions already set by base role?</label>
             </div>
         </div>
         <p class="umb-abstract" ng-if="showFailure">
