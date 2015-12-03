@@ -16,3 +16,8 @@ umbraco.config
 
 # Ignore NuGet files.
 /UserGroupPermissions/packages/
+
+# Visual Studio 2015 cache/options directory
+.vs/
+
+*.log
