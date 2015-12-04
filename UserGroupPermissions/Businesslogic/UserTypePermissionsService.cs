@@ -195,6 +195,20 @@
 
 
         /// <summary>
+        /// Copies Node Permissions
+        /// </summary>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void CopyNodePermissions(IContent sourceNode, IContent targetNode)
+        {
+            var sourcePermissions = GetNodePermissions(sourceNode);
+            foreach (var permission in sourcePermissions)
+            {
+                permission.NodeId = targetNode.Id;
+                _sqlHelper.Insert(permission);
+            }
+        }
+
+        /// <summary>
         /// Delets all permissions for the node/user combination
         /// </summary>
         /// <param name="user"></param>
@@ -262,7 +276,6 @@
         {
             _sqlHelper.Execute("delete from UserTypePermissions where NodeId = @0", node.Id);
         }
-
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void UpdateCruds(IUserType userType, IContent node, IEnumerable<char> permissions, bool updateChildren)

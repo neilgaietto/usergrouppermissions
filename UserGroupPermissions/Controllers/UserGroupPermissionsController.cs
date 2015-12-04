@@ -151,18 +151,20 @@
                 //check if any permissions were set
                 var newUserTypePermissions = userPermissions.FirstOrDefault(x => x.UserTypeId == u.Id);
                 if (newUserTypePermissions == null) continue;
-                var existingPermissions = u.Permissions.Where(x => assignablePermissions.Contains(x[0])).ToList();
+
+                //grab base usertype permissions for reference - filters no assignable
+                var basePermissions = u.Permissions.Where(x => assignablePermissions.Contains(x[0])).ToList();
 
                 //grab new permissions
                 var permissions = newUserTypePermissions.Permissions.ToList();
-                if (!permissions.Any() && !(ignoreBase && !existingPermissions.Any()))
+                if (!permissions.Any() && !(ignoreBase && !basePermissions.Any()))
                 {
                     //no permissions set means disable all permissions
                     permissions.Add("-");
                 }
 
                 //if we ignore when set permissions match base permissions
-                if (ignoreBase && permissions.All(x => existingPermissions.Contains(x)) && existingPermissions.All(x => permissions.Contains(x)))
+                if (ignoreBase && permissions.All(x => basePermissions.Contains(x)) && basePermissions.All(x => permissions.Contains(x)))
                 {
                     permissions = new List<string>();
                 }
