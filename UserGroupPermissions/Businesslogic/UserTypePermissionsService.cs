@@ -201,7 +201,7 @@
 
 
         /// <summary>
-        /// deletes all permissions for the user
+        /// deletes all permissions for the user Type
         /// </summary>
         /// <param name="userType"></param>
         public void DeletePermissions(IUserType userType)
@@ -209,6 +209,22 @@
             // delete all settings on the node for this user
 
             _sqlHelper.Execute("delete from UserTypePermissions where UserTypeId=@0 ", userType.Id);
+
+        }
+
+
+
+        /// <summary>
+        /// deletes all the users inherited permissions for all roles
+        /// </summary>
+        public void DeleteUsersRolePermissions(int userId)
+        {
+            // delete all settings on the node for this user
+
+            _sqlHelper.Execute("delete u "+
+                                "from umbracoUser2NodePermission u "+
+                                "join UserTypePermissions p on u.nodeId = p.NodeId and u.permission = p.PermissionId "+
+                                "and u.userId = @0 ", userId);
 
         }
 
