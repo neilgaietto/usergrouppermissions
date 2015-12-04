@@ -4,7 +4,8 @@
     $scope.pageName = $scope.currentNode.name;
     $scope.userOptions = {
         applyPermissions: false,
-        ignoreBasePermissions: true
+        ignoreBasePermissions: true,
+        replaceChildNodePermissions: false
     };
     $scope.processingMessage = "Processing request. Please wait.";
     $scope.successMessage = "Operation successful.";
@@ -17,6 +18,7 @@
     $scope.showProgress = true;
     $scope.applyPermissionsId = "ugp-apply-permissions-" + Math.random().toString().replace(".", "");
     $scope.ignoreBasePermissionsId = "ugp-ignore-base-permissions-" + Math.random().toString().replace(".", "");
+    $scope.replaceChildNodePermissionsId = "ugp-replace-child-permissions-" + Math.random().toString().replace(".", "");
     $scope.userTypes = [];
     $scope.permissions = [];
 
@@ -104,6 +106,7 @@
             "NodeId": id,
             "ReplacePermissionsOnUsers": $scope.userOptions.applyPermissions,
             "IgnoreBasePermissions": $scope.userOptions.ignoreBasePermissions,
+            "ReplaceChildNodePermissions": $scope.userOptions.replaceChildNodePermissions,
             "UserTypePermissions": dataPermissions
         };
         var strData = JSON.stringify(data);

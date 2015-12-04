@@ -62,7 +62,7 @@
                 _sqlHelper.Insert(newPerms);
 
             }
-                
+
 
         }
 
@@ -86,7 +86,7 @@
         {
 
             string defaultPermissions = String.Join(string.Empty, userType.Permissions);
-            
+
             var allUserPermissions = GetUserTypePermissions(userType).GroupBy(x => x.NodeId).ToList();
 
             foreach (string nodeId in path.Split(','))
@@ -94,7 +94,7 @@
                 var parsedNodeId = int.Parse(nodeId);
                 if (allUserPermissions.Select(x => x.Key).Contains(parsedNodeId))
                 {
-                    var userTypenodePermissions =  String.Join(string.Empty,
+                    var userTypenodePermissions = String.Join(string.Empty,
                         allUserPermissions.FirstOrDefault(x => x.Key == parsedNodeId)
                         .Select(x => x.PermissionId));
 
@@ -137,7 +137,7 @@
                 var contentService = ApplicationContext.Current.Services.ContentService;
                 var nodesById = new Dictionary<int, IContent>();
                 var node = default(IContent);
-                var userId = new [] { user.Id };
+                var userId = new[] { user.Id };
 
 
                 // Apply each permission.
@@ -170,9 +170,10 @@
         /// </summary>
         /// <param name="userType">Type of the user.</param>
         /// <param name="node">The node.</param>
-        public void CopyPermissions(IUserType userType, IContent node)
+        /// <param name="updateChildren"></param>
+        public void CopyPermissions(IUserType userType, IContent node, bool updateChildren)
         {
-            IEnumerable<char>permissions = GetPermissions(userType, node.Path);
+            IEnumerable<char> permissions = GetPermissions(userType, node.Path);
 
             foreach (IUser user in userType.GetAllRelatedUsers())
             {
@@ -180,6 +181,14 @@
                 {
                     ApplicationContext.Current.Services.UserService
                         .ReplaceUserPermissions(user.Id, permissions, node.Id);
+                }
+            }
+
+            if (updateChildren)
+            {
+                foreach (var childNode in node.Children())
+                {
+                    CopyPermissions(userType, childNode, updateChildren);
                 }
             }
         }
@@ -221,9 +230,9 @@
         {
             // delete all settings on the node for this user
 
-            _sqlHelper.Execute("delete u "+
-                                "from umbracoUser2NodePermission u "+
-                                "join UserTypePermissions p on u.nodeId = p.NodeId and u.permission = p.PermissionId "+
+            _sqlHelper.Execute("delete u " +
+                                "from umbracoUser2NodePermission u " +
+                                "join UserTypePermissions p on u.nodeId = p.NodeId and u.permission = p.PermissionId " +
                                 "and u.userId = @0 ", userId);
 
         }
@@ -231,7 +240,7 @@
 
         public void DeletePermissions(int userTypeId, int[] iNodeIDs)
         {
-                
+
             string nodeIDs = string.Join(",", Array.ConvertAll<int, string>(iNodeIDs, Converter));
 
             _sqlHelper.Execute("delete from UserTypePermissions where NodeId IN (@0) AND UserTypeId=@1 ", nodeIDs, userTypeId);
@@ -256,7 +265,7 @@
 
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public void UpdateCruds(IUserType userType, IContent node, IEnumerable<char> permissions)
+        public void UpdateCruds(IUserType userType, IContent node, IEnumerable<char> permissions, bool updateChildren)
         {
             // do not act on admin user types.
             if (!userType.IsAdmin())
@@ -266,7 +275,17 @@
 
                 // Loop through the permissions and create them
                 foreach (char c in permissions)
+                {
                     Insert(userType, node, c);
+                }
+
+                if (updateChildren)
+                {
+                    foreach (var childNode in node.Children())
+                    {
+                        UpdateCruds(userType, childNode, permissions, updateChildren);
+                    }
+                }
             }
         }
 

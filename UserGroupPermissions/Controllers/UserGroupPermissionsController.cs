@@ -139,6 +139,7 @@
             var userPermissions = request.UserTypePermissions;
             var nodeId = request.NodeId;
             var ignoreBase = request.IgnoreBasePermissions;
+            var replaceChildPermissions = request.ReplaceChildNodePermissions;
             var node = contentService.GetById(nodeId);
             var permissionsByTypeId = new Dictionary<int, string[]>();
             var assignablePermissions = ActionsResolver.Current.Actions.Where(x => x.CanBePermissionAssigned).Select(x=>x.Letter);
@@ -182,13 +183,13 @@
 
 
                 // Update user type permissions.
-                _userTypePermissionsService.UpdateCruds(userType, node, pair.Value.Select(x => x[0]));
+                _userTypePermissionsService.UpdateCruds(userType, node, pair.Value.Select(x => x[0]), replaceChildPermissions);
 
 
                 // Update user permissions?
                 if (request.ReplacePermissionsOnUsers)
                 {
-                    _userTypePermissionsService.CopyPermissions(userType, node);
+                    _userTypePermissionsService.CopyPermissions(userType, node, replaceChildPermissions);
                 }
 
             }

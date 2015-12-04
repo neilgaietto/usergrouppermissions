@@ -27,7 +27,11 @@
                 <label for="{{applyPermissionsId}}">Replace permissions on all existing users for this node?</label>
             </div>
             <div>
-                <input id="{{ignoreBasePermissionsId}}" type="checkbox" ng-model="userOptions.ignoreBasePermissions" />
+                <input id="{{replaceChildNodePermissionsId}}" type="checkbox" ng-model="userOptions.replaceChildNodePermissions" />
+                <label for="{{replaceChildNodePermissionsId}}">Replace child node permissions?</label>
+            </div>
+            <div>
+                <input id="{{ignoreBasePermissionsId}}" type="checkbox" ng-model="userOptions.ignoreBasePermissions"/>
                 <label for="{{ignoreBasePermissionsId}}">Ignore setting permissions already set by base role?</label>
             </div>
         </div>
