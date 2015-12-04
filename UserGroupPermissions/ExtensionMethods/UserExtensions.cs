@@ -13,7 +13,7 @@ namespace UserGroupPermissions.ExtensionMethods
     {
         public static bool IsAdmin(this IUser user)
         {
-            return user.UserType.Alias == "admin";
+            return user.UserType.IsAdmin();
 
         }
 

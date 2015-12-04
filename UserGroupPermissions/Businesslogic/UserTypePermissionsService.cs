@@ -259,7 +259,7 @@
         public void UpdateCruds(IUserType userType, IContent node, IEnumerable<char> permissions)
         {
             // do not act on admin user types.
-            if (userType.Alias != "admin")
+            if (!userType.IsAdmin())
             {
                 // delete all settings on the node for this user
                 DeletePermissions(userType, node);

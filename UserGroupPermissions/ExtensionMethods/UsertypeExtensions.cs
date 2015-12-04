@@ -19,5 +19,11 @@ namespace UserGroupPermissions.ExtensionMethods
                 .OrderBy(x=>x.Name).ToArray();
 
         }
+
+        public static bool IsAdmin(this IUserType userType)
+        {
+            return userType.Alias == "admin";
+
+        }
     }
 }
