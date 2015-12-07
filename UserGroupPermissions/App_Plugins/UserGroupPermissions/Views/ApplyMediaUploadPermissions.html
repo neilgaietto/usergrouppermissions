@@ -1,0 +1,25 @@
+﻿<div class="umb-dialog umb-pane" ng-controller="UGP.ApplyMediaUploadPermissions">
+    <div class="umb-dialog-body">
+        <p class="umb-abstract" ng-if="showQuestion">
+            Are you sure you want to change Media Upload Access for user type {{selectedUserType}}?
+        </p>
+        <p class="umb-abstract" ng-if="showFailure">
+            {{failureMessage}}
+        </p>
+        <p class="umb-abstract" ng-if="showSuccess">
+            {{successMessage}}
+        </p>
+        <p class="umb-abstract" ng-if="showProgress">
+            Processing request. Please wait.
+        </p>
+        <div ng-if="showConfirmButtons">
+            <umb-confirm on-confirm="performApply" on-cancel="cancel">
+            </umb-confirm>
+        </div>
+    </div>
+    <div class="umb-dialog-footer btn-toolbar umb-btn-toolbar" ng-if="showDoneButton">
+        <button class="btn" ng-click="closeDialog()">
+            <localize key="defaultdialogs_closeThisWindow">Close this window</localize>
+        </button>
+    </div>
+</div>

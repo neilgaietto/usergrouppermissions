@@ -1,8 +1,9 @@
 ﻿{
-    "javascript": [
-        "~/App_Plugins/UserGroupPermissions/Controllers/ApplyUserGroupPermissions.js",
-        "~/App_Plugins/UserGroupPermissions/Controllers/SetUserGroupPermissions.js"
-    ],
+  "javascript": [
+    "~/App_Plugins/UserGroupPermissions/Controllers/ApplyMediaUploadPermissions.js",
+    "~/App_Plugins/UserGroupPermissions/Controllers/ApplyUserGroupPermissions.js",
+    "~/App_Plugins/UserGroupPermissions/Controllers/SetUserGroupPermissions.js"
+  ],
     "css": [
         "~/App_Plugins/UserGroupPermissions/Styles/UserGroupPermissions.css"
     ]

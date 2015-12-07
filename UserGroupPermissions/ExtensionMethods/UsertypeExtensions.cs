@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Umbraco.Core;
 using Umbraco.Core.Models.Membership;
+using UserGroupPermissions.MenuActions;
 
 namespace UserGroupPermissions.ExtensionMethods
 {
@@ -23,6 +24,13 @@ namespace UserGroupPermissions.ExtensionMethods
         public static bool IsAdmin(this IUserType userType)
         {
             return userType.Alias == "admin";
+
+        }
+
+        public static bool HasDisabledMediaUpload(this IUserType userType)
+        {
+            var currentlyDisabled = userType.Permissions.IndexOf(DisableMediaUploadPermissions.Instance.Letter.ToString()) >= 0;
+            return currentlyDisabled;
 
         }
     }

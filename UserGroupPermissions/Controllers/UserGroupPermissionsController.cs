@@ -1,4 +1,7 @@
-﻿namespace UserGroupPermissions.Controllers
+﻿using UserGroupPermissions.ExtensionMethods;
+using UserGroupPermissions.MenuActions;
+
+namespace UserGroupPermissions.Controllers
 {
 
     // Namespaces.
@@ -142,7 +145,7 @@
             var replaceChildPermissions = request.ReplaceChildNodePermissions;
             var node = contentService.GetById(nodeId);
             var permissionsByTypeId = new Dictionary<int, string[]>();
-            var assignablePermissions = ActionsResolver.Current.Actions.Where(x => x.CanBePermissionAssigned).Select(x=>x.Letter);
+            var assignablePermissions = ActionsResolver.Current.Actions.Where(x => x.CanBePermissionAssigned).Select(x => x.Letter);
 
 
             // Add all user types to dictionary.
@@ -281,6 +284,62 @@
                     }).ToArray()
                 }).ToArray()
             };
+
+        }
+
+        [HttpPost]
+        public object ApplyMediaUploadPermissions(ApplyMediaRequest request)
+        {
+
+            // Variables.
+            var failureReason = default(string);
+            var userService = Services.UserService;
+            var role = userService.GetUserTypeById(request.RoleId);
+            var success = true;
+
+
+            // User found?
+            if (role == null)
+            {
+                success = false;
+                failureReason = UserNotFound;
+            }
+
+
+            // Copy permissions.
+            if (success)
+            {
+
+                if (role.HasDisabledMediaUpload())
+                {
+                    role.Permissions =
+                        role.Permissions.Where(x => x != DisableMediaUploadPermissions.Instance.Letter.ToString());
+                }
+                else
+                {
+                    role.Permissions = role.Permissions.Union(new[] { DisableMediaUploadPermissions.Instance.Letter.ToString() });
+
+                }
+                userService.SaveUserType(role, false);//does not trigger the saving event which would revert the toggle off
+            }
+
+
+            // Indicate success or failure.
+            if (success)
+            {
+                return new
+                {
+                    Success = true
+                };
+            }
+            else
+            {
+                return new
+                {
+                    Success = false,
+                    Reason = failureReason
+                };
+            }
 
         }
 

@@ -286,9 +286,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Plugins\UserGroupPermissions\Controllers\ApplyMediaUploadPermissions.js" />
     <Content Include="App_Plugins\UserGroupPermissions\Controllers\SetUserGroupPermissions.js" />
     <Content Include="App_Plugins\UserGroupPermissions\Controllers\ApplyUserGroupPermissions.js" />
     <Content Include="App_Plugins\UserGroupPermissions\Styles\UserGroupPermissions.css" />
+    <Content Include="App_Plugins\UserGroupPermissions\Views\ApplyMediaUploadPermissions.html" />
     <Content Include="App_Plugins\UserGroupPermissions\Views\SetUserGroupPermissions.html" />
     <Content Include="App_Plugins\UserGroupPermissions\Views\ApplyUserGroupPermissions.html" />
     <Content Include="Web.config" />
@@ -297,15 +299,20 @@
     <Compile Include="Businesslogic\LanguageFiles.cs" />
     <Compile Include="Businesslogic\UserTypePermissionsService.cs" />
     <Compile Include="Controllers\UserGroupPermissionsController.cs" />
+    <Compile Include="Events\AddDisableMediaUploadToContextMenu.cs" />
     <Compile Include="Events\AddApplyUserGroupPermissionsToContextMenu.cs" />
     <Compile Include="Events\AddUserGroupPermissionToContextMenu.cs" />
     <Compile Include="Events\ContentEvents.cs" />
     <Compile Include="Events\InstallLanguagesKeys.cs" />
     <Compile Include="Events\CreateDatabaseTables.cs" />
+    <Compile Include="Events\MediaSaved.cs" />
+    <Compile Include="Events\UserTypeSaved.cs" />
     <Compile Include="Events\UserSaved.cs" />
     <Compile Include="ExtensionMethods\UserExtensions.cs" />
     <Compile Include="ExtensionMethods\UserTypeExtensions.cs" />
+    <Compile Include="MenuActions\DisableMediaUploadPermissions.cs" />
     <Compile Include="MenuActions\UserGroupPermissions.cs" />
+    <Compile Include="Models\ApplyMediaRequest.cs" />
     <Compile Include="Models\GetPermissionsRequest.cs" />
     <Compile Include="Models\ApplyRequest.cs" />
     <Compile Include="Models\SetPermissionsRequest.cs" />
