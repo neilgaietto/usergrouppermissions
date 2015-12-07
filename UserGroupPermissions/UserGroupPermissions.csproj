@@ -299,6 +299,7 @@
     <Compile Include="Controllers\UserGroupPermissionsController.cs" />
     <Compile Include="Events\AddApplyUserGroupPermissionsToContextMenu.cs" />
     <Compile Include="Events\AddUserGroupPermissionToContextMenu.cs" />
+    <Compile Include="Events\ContentEvents.cs" />
     <Compile Include="Events\InstallLanguagesKeys.cs" />
     <Compile Include="Events\CreateDatabaseTables.cs" />
     <Compile Include="Events\UserSaved.cs" />
