@@ -243,10 +243,11 @@
         public void DeleteUsersRolePermissions(int userId)
         {
             // delete all settings on the node for this user
-
-            _sqlHelper.Execute("delete from umbracoUser2NodePermission " +
-                                "join UserTypePermissions on umbracoUser2NodePermission.nodeId = UserTypePermissions.NodeId and umbracoUser2NodePermission.permission = UserTypePermissions.PermissionId " +
-                                "and umbracoUser2NodePermission.userId = @0 ", userId);
+            
+            _sqlHelper.Execute("delete u " +
+                                "from umbracoUser2NodePermission u " +
+                                "join UserTypePermissions p on u.nodeId = p.NodeId and u.permission = p.PermissionId " +
+                                "and u.userId = @0 ", userId);
 
         }
 

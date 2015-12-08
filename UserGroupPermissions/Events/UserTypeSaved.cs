@@ -49,7 +49,7 @@ namespace UserGroupPermissions.Events
                 var existing = ApplicationContext.Current.Services.UserService.GetUserTypeById(role.Id);
 
                 //preserves the disabled media permission
-                if (existing.HasDisabledMediaUpload() && !role.HasDisabledMediaUpload())
+                if (existing != null && existing.HasDisabledMediaUpload() && !role.HasDisabledMediaUpload())
                 {
                     role.Permissions = role.Permissions.Union(new[] { DisableMediaUploadPermissions.Instance.Letter.ToString() });
                 }

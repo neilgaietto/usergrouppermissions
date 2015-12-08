@@ -29,6 +29,7 @@ namespace UserGroupPermissions.ExtensionMethods
 
         public static bool HasDisabledMediaUpload(this IUserType userType)
         {
+            if (userType == null) return false;
             var currentlyDisabled = userType.Permissions.IndexOf(DisableMediaUploadPermissions.Instance.Letter.ToString()) >= 0;
             return currentlyDisabled;
 
