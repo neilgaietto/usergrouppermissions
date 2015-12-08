@@ -309,6 +309,7 @@
     <Compile Include="Models\GetPermissionsRequest.cs" />
     <Compile Include="Models\ApplyRequest.cs" />
     <Compile Include="Models\SetPermissionsRequest.cs" />
+    <Compile Include="Models\User2NodePermissionDto.cs" />
     <Compile Include="Models\UserTypePermission.cs" />
     <Compile Include="Models\UserTypePermissionRow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -349,7 +350,8 @@
   <PropertyGroup>
     <PostBuildEvent>XCOPY "$(ProjectDir)bin\UserGroupPermissions.dll" "C:\websites\user-group-permissions-website\bin" /y /s
 XCOPY "$(ProjectDir)bin\UserGroupPermissions.pdb" "C:\websites\user-group-permissions-website\bin" /y /s
-XCOPY "$(ProjectDir)App_Plugins\UserGroupPermissions\*" "C:\websites\user-group-permissions-website\App_Plugins\UserGroupPermissions" /s /i /y</PostBuildEvent>
+XCOPY "$(ProjectDir)App_Plugins\UserGroupPermissions\*" "C:\websites\user-group-permissions-website\App_Plugins\UserGroupPermissions" /s /i /y
+</PostBuildEvent>
   </PropertyGroup>
   <Import Project="packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">

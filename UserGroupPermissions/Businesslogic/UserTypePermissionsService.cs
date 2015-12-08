@@ -244,10 +244,15 @@
         {
             // delete all settings on the node for this user
 
-            _sqlHelper.Execute("delete u " +
-                                "from umbracoUser2NodePermission u " +
-                                "join UserTypePermissions p on u.nodeId = p.NodeId and u.permission = p.PermissionId " +
-                                "and u.userId = @0 ", userId);
+            var items = _sqlHelper.Fetch<User2NodePermissionDto>(
+                "select umbracoUser2NodePermission.* from umbracoUser2NodePermission " +
+                "join UserTypePermissions on umbracoUser2NodePermission.nodeId = UserTypePermissions.NodeId and umbracoUser2NodePermission.permission = UserTypePermissions.PermissionId " +
+                "where umbracoUser2NodePermission.userId = @0 ", userId);
+
+            foreach (var item in items)
+            {
+                _sqlHelper.Delete<User2NodePermissionDto>(item);
+            }
 
         }
 
