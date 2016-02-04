@@ -55,8 +55,8 @@
         {
             foreach (var groupedIds in iNodeIDs.InGroupsOf(2000))
             {
-                string nodeIDs = string.Join(",", groupedIds);
-                _sqlHelper.Execute("INSERT INTO [UserTypePermissions] ([NodeId],[UserTypeId],[PermissionId]) select id, @1, '@2' from umbracoNode where id IN (@0) ", nodeIDs, userTypeId, permissionKey);
+                _sqlHelper.Execute("INSERT INTO [UserTypePermissions] ([NodeId],[UserTypeId],[PermissionId]) " +
+                                   "select id, @0, @1 from umbracoNode where id IN (@2) ", userTypeId, permissionKey, groupedIds);
             }
         }
 
@@ -68,9 +68,8 @@
         /// <returns></returns>
         public IEnumerable<UserTypePermissionRow> GetUserTypePermissions(IUserType userType)
         {
-
             var items = _sqlHelper.Fetch<UserTypePermissionRow>(
-                "select * from UserTypePermissions  where UserTypeId = @0 order by NodeId", userType.Id);
+                "select * from UserTypePermissions where UserTypeId = @0 order by NodeId", userType.Id);
 
             return items;
         }
@@ -133,7 +132,6 @@
                 var node = default(IContent);
                 var userId = new[] { user.Id };
 
-
                 // Apply each permission.
                 foreach (var permission in permissions)
                 {
@@ -145,16 +143,13 @@
                         nodesById[permission.NodeId] = node;
                     }
 
-
                     // Apply permission to node.
                     if (!string.IsNullOrWhiteSpace(permission.PermissionId) && node != null)
                     {
                         var permissionId = permission.PermissionId[0];
                         contentService.AssignContentPermission(node, permissionId, userId);
                     }
-
                 }
-
             }
         }
 
@@ -210,11 +205,9 @@
         public void DeletePermissions(IUserType userType)
         {
             // delete all settings on the node for this user
-
             _sqlHelper.Execute("delete from UserTypePermissions where UserTypeId=@0 ", userType.Id);
 
         }
-
 
 
         /// <summary>
@@ -231,16 +224,15 @@
 
         }
 
+
         /// <summary>
         /// Delets all permissions for the node/user combination
         /// </summary>
         public void DeletePermissions(int userTypeId, int[] iNodeIDs)
         {
-
             foreach (var groupedIds in iNodeIDs.InGroupsOf(2000))
             {
-                string nodeIDs = string.Join(",", groupedIds);
-                _sqlHelper.Execute("delete from UserTypePermissions where NodeId IN (@0) AND UserTypeId=@1 ", nodeIDs, userTypeId);
+                _sqlHelper.Execute("delete from UserTypePermissions where NodeId IN (@0) AND UserTypeId=@1 ", groupedIds, userTypeId);
             }
 
         }
@@ -254,6 +246,7 @@
         {
             _sqlHelper.Execute("delete from UserTypePermissions where NodeId = @0", node.Id);
         }
+
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void UpdateCruds(IUserType userType, IContent node, IEnumerable<char> permissions, bool updateChildren)
@@ -280,7 +273,7 @@
             var ids = new List<int>() { node.Id };
             if (getChildNodes)
             {
-                var childNodeIds = _sqlHelper.Fetch<int>("select id from umbracoNode where [path] like '%,@0,%' order by [level], id", node.Id);
+                var childNodeIds = _sqlHelper.Fetch<int>("select id from umbracoNode where [path] like '%,' + @0 + ',%' order by [level], id", node.Id.ToString());
                 ids.AddRange(childNodeIds);
             }
             return ids;
