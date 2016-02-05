@@ -110,7 +110,7 @@
         public IEnumerable<UserTypePermissionRow> GetNodePermissions(IContent node)
         {
             var items = _sqlHelper.Fetch<UserTypePermissionRow>(
-                "select * from UserTypePermissions where NodeId = @0 order by nodeId", node.Id);
+                "select * from UserTypePermissions where NodeId = @0", node.Id);
 
             return items;
         }
@@ -124,32 +124,13 @@
         {
             if (!user.IsAdmin() && !user.Disabled())
             {
-
-                // Variables.
-                var permissions = GetUserTypePermissions(user.UserType);
-                var contentService = ApplicationContext.Current.Services.ContentService;
-                var nodesById = new Dictionary<int, IContent>();
-                var node = default(IContent);
-                var userId = new[] { user.Id };
-
-                // Apply each permission.
-                foreach (var permission in permissions)
-                {
-
-                    // Get node (try cache first).
-                    if (!nodesById.TryGetValue(permission.NodeId, out node))
-                    {
-                        node = contentService.GetById(permission.NodeId);
-                        nodesById[permission.NodeId] = node;
-                    }
-
-                    // Apply permission to node.
-                    if (!string.IsNullOrWhiteSpace(permission.PermissionId) && node != null)
-                    {
-                        var permissionId = permission.PermissionId[0];
-                        contentService.AssignContentPermission(node, permissionId, userId);
-                    }
-                }
+                // Copy usertype permissions to user permissions table if the permission doesnt already exist
+                var userTypeId = user.UserType.Id;
+                var userId = user.Id ;
+                _sqlHelper.Execute("INSERT INTO [umbracoUser2NodePermission] ([userId], [nodeId], [permission]) "+
+                                    "SELECT @0, a.[NodeId], a.[PermissionId] FROM [UserTypePermissions] a "+
+                                    "LEFT OUTER JOIN[umbracoUser2NodePermission] b on a.NodeId = b.nodeId and a.PermissionId = b.permission and b.userId = @0 " +
+                                    "WHERE a.[UserTypeId] = @1 AND B.userId is null ", userId, userTypeId);
             }
         }
 
@@ -168,8 +149,7 @@
             {
                 if (!user.IsAdmin() && !user.Disabled())
                 {
-                    ApplicationContext.Current.Services.UserService
-                        .ReplaceUserPermissions(user.Id, permissions, node.Id);
+                    ApplicationContext.Current.Services.UserService.ReplaceUserPermissions(user.Id, permissions, node.Id);
                 }
             }
 
