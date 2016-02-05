@@ -23,21 +23,21 @@
                     </tr>
                     </tbody>
                 </table>
+                <ul style="list-style: none;">
+                    <li>
+                        <input id="{{applyPermissionsId}}" type="checkbox" ng-model="userOptions.applyPermissions" style="float:left;" />
+                        <label for="{{applyPermissionsId}}">Replace permissions on existing users?</label>
+                    </li>
+                    <li>
+                        <input id="{{replaceChildNodePermissionsId}}" type="checkbox" ng-model="userOptions.replaceChildNodePermissions" style="float:left;" />
+                        <label for="{{replaceChildNodePermissionsId}}">Replace child node permissions?</label>
+                    </li>
+                    <li>
+                        <input id="{{ignoreBasePermissionsId}}" type="checkbox" ng-model="userOptions.ignoreBasePermissions" style="float:left;" />
+                        <label for="{{ignoreBasePermissionsId}}">Ignore permissions set by base role?</label>
+                    </li>
+                </ul>
             </div>
-            <ul style="list-style: none;">
-                <li>
-                    <input id="{{applyPermissionsId}}" type="checkbox" ng-model="userOptions.applyPermissions" style="float:left;" />
-                    <label for="{{applyPermissionsId}}">Replace permissions on existing users?</label>
-                </li>
-                <li>
-                    <input id="{{replaceChildNodePermissionsId}}" type="checkbox" ng-model="userOptions.replaceChildNodePermissions" style="float:left;" />
-                    <label for="{{replaceChildNodePermissionsId}}">Replace child node permissions?</label>
-                </li>
-                <li>
-                    <input id="{{ignoreBasePermissionsId}}" type="checkbox" ng-model="userOptions.ignoreBasePermissions" style="float:left;" />
-                    <label for="{{ignoreBasePermissionsId}}">Ignore permissions set by base role?</label>
-                </li>
-            </ul>
             <p class="umb-abstract" ng-if="showFailure">
                 {{failureMessage}}
             </p>
