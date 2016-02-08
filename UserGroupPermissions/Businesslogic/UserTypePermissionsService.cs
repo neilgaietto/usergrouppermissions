@@ -206,10 +206,6 @@
             }
         }
 
-
-
-
-
         /// <summary>
         /// deletes all permissions for the user Type
         /// </summary>
@@ -242,7 +238,6 @@
 
         }
 
-
         /// <summary>
         /// deletes all the users inherited permissions for all roles
         /// </summary>
@@ -257,11 +252,7 @@
 
         }
 
-
-
         #endregion
-
-
 
     }
 
