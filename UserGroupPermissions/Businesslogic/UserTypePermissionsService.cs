@@ -160,11 +160,7 @@
         /// <param name="updateChildren"></param>
         public void ApplyPermissions(IUserType userType, IContent node, bool updateChildren)
         {
-            //TODO: update to use sql
-            //IEnumerable<char> permissions = GetPermissions(userType, node.Path);
             var nodeIds = GetNodeIdList(node, updateChildren).ToArray();
-            //var userIds = userType.GetAllRelatedUsers().Where(x => !x.IsAdmin() && !x.Disabled()).Select(x => x.Id).ToArray();
-
             DeletePermissions(userType.Id, nodeIds);
             InsertPermissions(userType.Id, nodeIds);
         }

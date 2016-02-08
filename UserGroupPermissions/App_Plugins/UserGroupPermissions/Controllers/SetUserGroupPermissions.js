@@ -3,7 +3,7 @@
     // Variables used in the view.
     $scope.pageName = $scope.currentNode.name;
     $scope.userOptions = {
-        applyPermissions: false,
+        applyPermissions: true,
         ignoreBasePermissions: true,
         replaceChildNodePermissions: false
     };
