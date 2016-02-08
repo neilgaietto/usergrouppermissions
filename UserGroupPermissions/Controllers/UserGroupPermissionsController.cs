@@ -188,7 +188,7 @@ namespace UserGroupPermissions.Controllers
 
 
                 // Update user type permissions.
-                _userTypePermissionsService.UpdateCruds(userType, node, pair.Value.Select(x => x[0]), replaceChildPermissions);
+                _userTypePermissionsService.UpdateUserTypePermissions(userType, node, pair.Value.Select(x => x[0]), replaceChildPermissions);
 
 
                 // Update user permissions?

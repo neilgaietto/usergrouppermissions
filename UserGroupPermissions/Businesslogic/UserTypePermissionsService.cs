@@ -133,9 +133,9 @@
             {
                 // Copy usertype permissions to user permissions table if the permission doesnt already exist
                 var userTypeId = user.UserType.Id;
-                var userId = user.Id ;
-                _sqlHelper.Execute("INSERT INTO [umbracoUser2NodePermission] ([userId], [nodeId], [permission]) "+
-                                    "SELECT @0, a.[NodeId], a.[PermissionId] FROM [UserTypePermissions] a "+
+                var userId = user.Id;
+                _sqlHelper.Execute("INSERT INTO [umbracoUser2NodePermission] ([userId], [nodeId], [permission]) " +
+                                    "SELECT @0, a.[NodeId], a.[PermissionId] FROM [UserTypePermissions] a " +
                                     "LEFT OUTER JOIN[umbracoUser2NodePermission] b on a.NodeId = b.nodeId and a.PermissionId = b.permission and b.userId = @0 " +
                                     "WHERE a.[UserTypeId] = @1 AND B.userId is null ", userId, userTypeId);
             }
@@ -161,27 +161,39 @@
         public void ApplyPermissions(IUserType userType, IContent node, bool updateChildren)
         {
             //TODO: update to use sql
-            IEnumerable<char> permissions = GetPermissions(userType, node.Path);
+            //IEnumerable<char> permissions = GetPermissions(userType, node.Path);
+            var nodeIds = GetNodeIdList(node, updateChildren).ToArray();
+            //var userIds = userType.GetAllRelatedUsers().Where(x => !x.IsAdmin() && !x.Disabled()).Select(x => x.Id).ToArray();
 
-            foreach (IUser user in userType.GetAllRelatedUsers())
+            DeletePermissions(userType.Id, nodeIds);
+            InsertPermissions(userType.Id, nodeIds);
+        }
+
+        public void DeletePermissions(int userTypeId, int[] nodeIds)
+        {
+            foreach (var groupedNodeIds in nodeIds.InGroupsOf(1000))
             {
-                if (!user.IsAdmin() && !user.Disabled())
-                {
-                    ApplicationContext.Current.Services.UserService.ReplaceUserPermissions(user.Id, permissions, node.Id);
-                }
+                _sqlHelper.Execute("DELETE from [umbracoUser2NodePermission] a " +
+                                    "join [umbracoUser] b on a.userId = b.id " +
+                                    "where b.userType = @0 and nodeId in (@1) and b.id > 0 ", userTypeId, groupedNodeIds);
             }
+        }
 
-            if (updateChildren)
+        public void InsertPermissions(int userTypeId, int[] nodeIds)
+        {
+            foreach (var groupedNodeIds in nodeIds.InGroupsOf(1000))
             {
-                foreach (var childNode in node.Children())
-                {
-                    ApplyPermissions(userType, childNode, updateChildren);
-                }
+                _sqlHelper.Execute(@"INSERT INTO [umbracoUser2NodePermission] ([userId], [nodeId], [permission])  " +
+                                    "SELECT c.id, a.[NodeId], a.[PermissionId] " +
+                                    "FROM [UserTypePermissions] a  " +
+                                    "JOIN [umbracoUser] c on a.UserTypeId = c.userType " +
+                                    "LEFT OUTER JOIN [umbracoUser2NodePermission] b on a.NodeId = b.nodeId and a.PermissionId = b.permission and b.userId = c.id " +
+                                    "WHERE a.[UserTypeId] = @0 AND a.[NodeId] in (@1) AND B.userId is null ", userTypeId, groupedNodeIds);
             }
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public void UpdateCruds(IUserType userType, IContent node, IEnumerable<char> permissions, bool updateChildren)
+        public void UpdateUserTypePermissions(IUserType userType, IContent node, IEnumerable<char> permissions, bool updateChildren)
         {
             // do not act on admin user types.
             if (!userType.IsAdmin())
@@ -197,6 +209,8 @@
                 }
             }
         }
+
+
 
 
 
