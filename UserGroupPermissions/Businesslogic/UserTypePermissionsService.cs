@@ -173,7 +173,7 @@
         {
             foreach (var groupedNodeIds in nodeIds.InGroupsOf(1000))
             {
-                _sqlHelper.Execute("DELETE from [umbracoUser2NodePermission] a " +
+                _sqlHelper.Execute("DELETE a from [umbracoUser2NodePermission] a " +
                                     "join [umbracoUser] b on a.userId = b.id " +
                                     "where b.userType = @0 and nodeId in (@1) and b.id > 0 ", userTypeId, groupedNodeIds);
             }
@@ -183,7 +183,7 @@
         {
             foreach (var groupedNodeIds in nodeIds.InGroupsOf(1000))
             {
-                _sqlHelper.Execute(@"INSERT INTO [umbracoUser2NodePermission] ([userId], [nodeId], [permission])  " +
+                _sqlHelper.Execute(@"INSERT INTO [umbracoUser2NodePermission] ([userId], [nodeId], [permission]) " +
                                     "SELECT c.id, a.[NodeId], a.[PermissionId] " +
                                     "FROM [UserTypePermissions] a  " +
                                     "JOIN [umbracoUser] c on a.UserTypeId = c.userType " +
