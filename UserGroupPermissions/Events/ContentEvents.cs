@@ -54,7 +54,7 @@ namespace UserGroupPermissions.Events
             //clear permissions for removed content
             foreach (var deletedNode in e.DeletedEntities)
             {
-                _userTypePermissionsService.DeletePermissions(deletedNode);
+                _userTypePermissionsService.DeleteUserTypePermissions(deletedNode);
             }
 
         }

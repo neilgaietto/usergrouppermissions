@@ -194,7 +194,7 @@ namespace UserGroupPermissions.Controllers
                 // Update user permissions?
                 if (request.ReplacePermissionsOnUsers)
                 {
-                    _userTypePermissionsService.CopyPermissions(userType, node, replaceChildPermissions);
+                    _userTypePermissionsService.ApplyPermissions(userType, node, replaceChildPermissions);
                 }
 
             }
