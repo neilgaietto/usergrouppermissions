@@ -38,7 +38,7 @@ namespace UserGroupPermissions.Events
             {
                 if (!entity.IsNewEntity() || entity.Parent() == null) return;
                 //copy parent permissions to new content node
-                _userTypePermissionsService.CopyNodePermissions(entity.Parent(), entity);
+                _userTypePermissionsService.CopyNodeUserTypePermissions(entity.Parent(), entity);
             }
         }
 
@@ -46,7 +46,7 @@ namespace UserGroupPermissions.Events
         {
             if (e.Parent == null || e.Entity == null || !e.Entity.IsNewEntity()) return;
             //copy parent permissions to new content node
-            _userTypePermissionsService.CopyNodePermissions(e.Parent, e.Entity);
+            _userTypePermissionsService.CopyNodeUserTypePermissions(e.Parent, e.Entity);
         }
 
         private void ContentService_Deleted(IContentService sender, DeleteEventArgs<IContent> e)

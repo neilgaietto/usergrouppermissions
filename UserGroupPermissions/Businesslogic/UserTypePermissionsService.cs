@@ -107,7 +107,7 @@
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        public IEnumerable<UserTypePermissionRow> GetNodePermissions(IContent node)
+        public IEnumerable<UserTypePermissionRow> GetNodeUserTypePermissions(IContent node)
         {
             var items = _sqlHelper.Fetch<UserTypePermissionRow>(
                 "select * from UserTypePermissions where NodeId = @0", node.Id);
@@ -143,6 +143,7 @@
         /// <param name="updateChildren"></param>
         public void CopyPermissions(IUserType userType, IContent node, bool updateChildren)
         {
+            //TODO: update to use sql
             IEnumerable<char> permissions = GetPermissions(userType, node.Path);
 
             foreach (IUser user in userType.GetAllRelatedUsers())
@@ -167,14 +168,10 @@
         /// Copies Node Permissions
         /// </summary>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public void CopyNodePermissions(IContent sourceNode, IContent targetNode)
+        public void CopyNodeUserTypePermissions(IContent sourceNode, IContent targetNode)
         {
-            var sourcePermissions = GetNodePermissions(sourceNode);
-            foreach (var permission in sourcePermissions)
-            {
-                permission.NodeId = targetNode.Id;
-                _sqlHelper.Insert(permission);
-            }
+            _sqlHelper.Execute("INSERT INTO [UserTypePermissions] ([NodeID], [UserTypeId], [PermissionId]) "+
+                                "SELECT @1, [UserTypeId], [PermissionId] FROM [UserTypePermissions] WHERE NodeId = @0", sourceNode.Id, targetNode.Id);
         }
 
 
