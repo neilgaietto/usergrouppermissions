@@ -29,7 +29,7 @@ namespace UserGroupPermissions.Events
             var currentUser = UmbracoContext.Current.Security.CurrentUser;
             if (currentUser.UserType.HasDisabledMediaUpload())
             {
-                e.CancelOperation(new EventMessage("Media", "Invalid permissions to upload media."));
+                e.CancelOperation(new EventMessage("Media", "Invalid permissions to upload media.", EventMessageType.Error));
             }
         }
 
