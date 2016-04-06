@@ -136,6 +136,7 @@
                 var userId = user.Id;
                 _sqlHelper.Execute("INSERT INTO [umbracoUser2NodePermission] ([userId], [nodeId], [permission]) " +
                                     "SELECT @0, a.[NodeId], a.[PermissionId] FROM [UserTypePermissions] a " +
+                                    "JOIN [umbracoNode] n on a.NodeId = n.id " +
                                     "LEFT OUTER JOIN[umbracoUser2NodePermission] b on a.NodeId = b.nodeId and a.PermissionId = b.permission and b.userId = @0 " +
                                     "WHERE a.[UserTypeId] = @1 AND B.userId is null ", userId, userTypeId);
             }
