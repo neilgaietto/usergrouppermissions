@@ -49,9 +49,9 @@
         /// </summary>
         /// <param name="userType"></param>
         /// <returns></returns>
-        public IEnumerable<UserTypePermissionRow> GetUserTypePermissions(IUserType userType)
+        public IEnumerable<UserTypePermissionRow> GetUserTypePermissions(IUserType userType, int nodeId)
         {
-            var items = _sqlHelper.Fetch<UserTypePermissionRow>("select * from UserTypePermissions where UserTypeId = @0 order by NodeId", userType.Id);
+            var items = _sqlHelper.Fetch<UserTypePermissionRow>("select * from UserTypePermissions where UserTypeId = @0 AND NodeId = @1", userType.Id, nodeId);
 
             return items;
         }
@@ -72,36 +72,25 @@
             var ids = new List<int>() { node.Id };
             if (getChildNodes)
             {
-                var childNodeIds = _sqlHelper.Fetch<int>("select id from umbracoNode where [path] like '%,' + @0 + ',%' order by [level], id", node.Id.ToString());
+                var childNodeIds = _sqlHelper.Fetch<int>("select id from umbracoNode where [path] like @0 + ',%' order by [level], id", node.Path);
                 ids.AddRange(childNodeIds);
             }
             return ids;
         }
 
-        public string GetPermissions(IUserType userType, string path)
+        public string GetPermissions(IUserType userType, int nodeId)
         {
 
-            string defaultPermissions = String.Join(string.Empty, userType.Permissions);
+            string permissions = String.Join(string.Empty, userType.Permissions);//default
 
-            var allUserPermissions = GetUserTypePermissions(userType).GroupBy(x => x.NodeId).ToList();
+            var userTypePermissions = GetUserTypePermissions(userType, nodeId).ToList();
 
-            foreach (string nodeId in path.Split(','))
+            if (userTypePermissions.Any())
             {
-                var parsedNodeId = int.Parse(nodeId);
-                if (allUserPermissions.Select(x => x.Key).Contains(parsedNodeId))
-                {
-                    var userTypenodePermissions = String.Join(string.Empty,
-                        allUserPermissions.FirstOrDefault(x => x.Key == parsedNodeId)
-                        .Select(x => x.PermissionId));
-
-                    if (!string.IsNullOrEmpty(userTypenodePermissions))
-                    {
-                        defaultPermissions = userTypenodePermissions;
-                    }
-                }
+                permissions = String.Join(string.Empty, userTypePermissions.Select(x => x.PermissionId));
             }
 
-            return defaultPermissions;
+            return permissions;
         }
 
 

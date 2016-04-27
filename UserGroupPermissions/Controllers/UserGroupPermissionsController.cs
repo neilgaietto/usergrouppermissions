@@ -227,7 +227,7 @@ namespace UserGroupPermissions.Controllers
             var userService = ApplicationContext.Services.UserService;
             var contentService = ApplicationContext.Services.ContentService;
             var node = contentService.GetById(request.NodeId);
-            var nodePath = node.Path;
+            var nodeId = node.Id;
             var user = Security.CurrentUser;
             var orderedUserTypes = userService.GetAllUserTypes()
                 .Where(x => x.Id > 0 && !"admin".InvariantEquals(x.Alias))
@@ -248,7 +248,7 @@ namespace UserGroupPermissions.Controllers
                 if (!permissionsByType.TryGetValue(typeId, out permissions))
                 {
                     permissions = _userTypePermissionsService
-                        .GetPermissions(ut, nodePath);
+                        .GetPermissions(ut, nodeId);
                     permissionsByType[typeId] = permissions;
                 }
                 return permissions.IndexOf(letter) > -1;
