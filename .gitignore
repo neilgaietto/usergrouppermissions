@@ -16,3 +16,10 @@ umbraco.config
 
 # Ignore NuGet files.
 /UserGroupPermissions/packages/
+
+# Ignore VS2015 environment settings
+**/.vs/
+
+# Ignore npm modules
+
+**/node_modules/
