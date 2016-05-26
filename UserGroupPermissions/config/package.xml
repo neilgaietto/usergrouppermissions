@@ -1,20 +1,3 @@
-Skip to content
-This repository
-Search
-Pull requests
-Issues
-Gist
- @TErenberger
- Watch 3
-  Star 4
- Fork 5 Nicholas-Westby/usergrouppermissions
-forked from cwjackso/usergrouppermissions
- Code  Issues 3  Pull requests 1  Wiki  Pulse  Graphs
-Branch: master Find file Copy pathusergrouppermissions/Package/70322359-01bf-416f-ba50-49f9cb4dc0f6/package.xml
-dca365b  on Aug 18, 2014
-@rsoeteman rsoeteman Check in
-1 contributor
-RawBlameHistory     78 lines (74 sloc)  2.73 KB
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <umbPackage>
   <files>
@@ -89,5 +72,3 @@ CREATE TABLE [dbo].[UserGroupPermissions_UserType2NodePermission](
     ]]></Action>
   </Actions>
 </umbPackage>
-Status API Training Shop Blog About
-© 2016 GitHub, Inc. Terms Privacy Security Contact Help
