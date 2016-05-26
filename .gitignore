@@ -23,3 +23,7 @@ umbraco.config
 # Ignore npm modules
 
 **/node_modules/
+
+# Ignore grunt build tmp files
+**/UserGroupPermissions/tmp/
+**/UserGroupPermissions/dist/
