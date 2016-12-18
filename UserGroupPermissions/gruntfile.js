@@ -1,6 +1,6 @@
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
-  var path = require('path')
+  var path = require('path');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -14,11 +14,6 @@ module.exports = function(grunt) {
         atBegin: true
       },
 
-      less: {
-        files: ['src/Assets/less/*.less'],
-        tasks: ['less:dist']
-      },
-
       app_plugins: {
         files: ['./**/**'],
         tasks: ['copy:app_plugins']
@@ -27,17 +22,6 @@ module.exports = function(grunt) {
       dll: {
         files: ['./**/*.cs'],
         tasks: ['msbuild:dist', 'copy:dll']
-      }
-    },
-
-    less: {
-      dist: {
-        options: {
-          paths: ["src/assets/less"],
-        },
-        files: {
-          '<%= basePath %>/css/application.css': 'src/assets/less/*.less',
-        }
       }
     },
 
@@ -124,7 +108,7 @@ module.exports = function(grunt) {
         manifest: 'config/package.xml',
         readme: 'config/readme.txt',
         sourceDir: 'tmp/umbraco',
-        outputDir: 'pkg',
+        outputDir: 'pkg'
       }
     },
 
@@ -159,13 +143,13 @@ module.exports = function(grunt) {
         src: ['UserGroupPermissions.csproj'],
         options: {
           projectConfiguration: 'Debug',
-          targets: ['Clean', 'Rebuild'],
+          targets: ['Clean', 'Rebuild']
         }
       }
     }
   });
 
-  grunt.registerTask('default', ['clean', 'less', 'assemblyinfo', 'msbuild:dist', 'copy:dll', 'copy:app_plugins']);
+  grunt.registerTask('default', ['clean', 'assemblyinfo', 'msbuild:dist', 'copy:dll', 'copy:app_plugins']);
   grunt.registerTask('nuget',   ['clean:tmp', 'default', 'copy:nuget', 'template:nuspec', 'nugetpack']);
   grunt.registerTask('umbraco', ['clean:tmp', 'default', 'copy:umbraco', 'umbracoPackage']);
   grunt.registerTask('package', ['clean:tmp', 'default', 'copy:nuget', 'template:nuspec', 'nugetpack', 'copy:umbraco', 'umbracoPackage', 'clean:tmp']);

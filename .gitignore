@@ -27,5 +27,8 @@ umbraco.config
 **/UserGroupPermissions/tmp/
 **/UserGroupPermissions/dist/
 
+# Ignore package files.
+**/UserGroupPermissions/pkg/
+
 # Ignore WebStorm files.
 .idea/
