@@ -1,8 +1,9 @@
 {
-	"name": "UserGroupPermissions",
+	"name": "User Group Permissions",
 	"version": "1.3.0",
 	"url": "https://github.com/Nicholas-Westby/usergrouppermissions",
 	"author": "Nicholas Westby",
+	"authorUrl": "http://www.nicholaswestby.com/",
 	"license": "MIT",
 	"licenseUrl": "http://opensource.org/licenses/MIT"
 }

@@ -1,0 +1,1 @@
+User Group Permissions allows permissions to be set on content nodes by user type rather than by individual users.

@@ -13,7 +13,7 @@
         <tags>umbraco</tags>
         <licenseUrl><%= licenseUrl %></licenseUrl>
         <dependencies>
-            <dependency id="UmbracoCms.Core" version="7.3.0" />
+            <dependency id="UmbracoCms.Core" version="7.3.3" />
         </dependencies>
     </metadata>
 </package>

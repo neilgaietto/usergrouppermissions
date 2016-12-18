@@ -97,18 +97,21 @@ module.exports = function(grunt) {
     },
 
     umbracoPackage: {
-      options: {
-        name: "<%= pkgMeta.name %>",
-        version: '<%= pkgMeta.version %>',
-        url: '<%= pkgMeta.url %>',
-        license: '<%= pkgMeta.license %>',
-        licenseUrl: '<%= pkgMeta.licenseUrl %>',
-        author: '<%= pkgMeta.author %>',
-        authorUrl: '<%= pkgMeta.authorUrl %>',
-        manifest: 'config/package.xml',
-        readme: 'config/readme.txt',
-        sourceDir: 'tmp/umbraco',
-        outputDir: 'pkg'
+      main: {
+        src: 'tmp/umbraco',
+        dest: 'pkg',
+        options: {
+          name: '<%= pkgMeta.name %>',
+          version: '<%= pkgMeta.version %>',
+          url: '<%= pkgMeta.url %>',
+          license: '<%= pkgMeta.license %>',
+          licenseUrl: '<%= pkgMeta.licenseUrl %>',
+          author: '<%= pkgMeta.author %>',
+          authorUrl: '<%= pkgMeta.authorUrl %>',
+          manifest: 'config/package.xml',
+          readme: 'config/readme.txt',
+          outputName: 'UserGroupPermissions_<%= pkgMeta.version %>.zip'
+        }
       }
     },
 
@@ -151,6 +154,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['clean', 'assemblyinfo', 'msbuild:dist', 'copy:dll', 'copy:app_plugins']);
   grunt.registerTask('nuget',   ['clean:tmp', 'default', 'copy:nuget', 'template:nuspec', 'nugetpack']);
-  grunt.registerTask('umbraco', ['clean:tmp', 'default', 'copy:umbraco', 'umbracoPackage']);
-  grunt.registerTask('package', ['clean:tmp', 'default', 'copy:nuget', 'template:nuspec', 'nugetpack', 'copy:umbraco', 'umbracoPackage', 'clean:tmp']);
+  grunt.registerTask('umbraco', ['clean:tmp', 'default', 'copy:umbraco', 'umbracoPackage:main']);
+  grunt.registerTask('package', ['clean:tmp', 'default', 'copy:nuget', 'template:nuspec', 'nugetpack', 'copy:umbraco', 'umbracoPackage:main', 'clean:tmp']);
 };

@@ -2,11 +2,11 @@
 {
 
     // Namespaces.
+    using Models;
     using System;
     using Umbraco.Core;
     using Umbraco.Core.Logging;
     using Umbraco.Core.Persistence;
-    using UserGroupPermissions.Models;
 
 
     /// <summary>
@@ -20,18 +20,25 @@
         /// <summary>
         /// Application started.
         /// </summary>
-        protected override void ApplicationStarted(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
+        protected override void ApplicationStarted(UmbracoApplicationBase umbracoApplication,
+            ApplicationContext applicationContext)
         {
 
             // Swallow errors to avoid affecting site if database permissions are insufficient.
             try
             {
 
+                // Variables.
+                var dbContext = applicationContext.DatabaseContext;
+                var logger = applicationContext.ProfilingLogger.Logger;
+                var db = dbContext.Database;
+                var dbHelper = new DatabaseSchemaHelper(db, logger, dbContext.SqlSyntax);
+
+
                 // Create UserTypePermissions table if it doesn't exist yet.
-                var db = applicationContext.DatabaseContext.Database;
-                if (!db.TableExist("UserTypePermissions"))
+                if (!dbHelper.TableExist("UserTypePermissions"))
                 {
-                    db.CreateTable<UserTypePermissionRow>(false);
+                    dbHelper.CreateTable<UserTypePermissionRow>(false);
                 }
 
             }
