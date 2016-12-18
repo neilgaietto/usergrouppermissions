@@ -170,20 +170,28 @@
         /// </summary>
         /// <param name="userType">Type of the user.</param>
         /// <param name="node">The node.</param>
-        /// <param name="updateChildren"></param>
+        /// <param name="updateChildren">
+        /// Update child nodes too?
+        /// </param>
         public void CopyPermissions(IUserType userType, IContent node, bool updateChildren)
         {
-            IEnumerable<char> permissions = GetPermissions(userType, node.Path);
 
+            // Variables.
+            var permissions = GetPermissions(userType, node.Path);
+            var userService = ApplicationContext.Current.Services.UserService;
+
+
+            // Set permissions for each user.
             foreach (IUser user in userType.GetAllRelatedUsers())
             {
                 if (!user.IsAdmin() && !user.Disabled())
                 {
-                    ApplicationContext.Current.Services.UserService
-                        .ReplaceUserPermissions(user.Id, permissions, node.Id);
+                    userService.ReplaceUserPermissions(user.Id, permissions, node.Id);
                 }
             }
 
+
+            // Apply permissions to descendants as well?
             if (updateChildren)
             {
                 foreach (var childNode in node.Children())
@@ -191,6 +199,7 @@
                     CopyPermissions(userType, childNode, updateChildren);
                 }
             }
+
         }
 
 

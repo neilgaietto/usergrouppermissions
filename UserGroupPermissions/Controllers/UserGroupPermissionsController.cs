@@ -36,7 +36,7 @@
 
         #region Readonly Variables
 
-        private readonly UserTypePermissionsService _userTypePermissionsService;
+        private readonly UserTypePermissionsService userTypePermissionsService;
 
         #endregion
 
@@ -57,7 +57,7 @@
         public UserGroupPermissionsController(UmbracoContext umbracoContext)
             : base(umbracoContext)
         {
-            _userTypePermissionsService = new UserTypePermissionsService();
+            userTypePermissionsService = new UserTypePermissionsService();
         }
 
         #endregion
@@ -96,7 +96,7 @@
             // Copy permissions.
             if (success)
             {
-                _userTypePermissionsService.CopyPermissionsForSingleUser(user);
+                userTypePermissionsService.CopyPermissionsForSingleUser(user);
             }
 
 
@@ -142,41 +142,57 @@
             var replaceChildPermissions = request.ReplaceChildNodePermissions;
             var node = contentService.GetById(nodeId);
             var permissionsByTypeId = new Dictionary<int, string[]>();
-            var assignablePermissions = ActionsResolver.Current.Actions.Where(x => x.CanBePermissionAssigned).Select(x=>x.Letter);
+            var assignablePermissions = ActionsResolver.Current.Actions
+                .Where(x => x.CanBePermissionAssigned).Select(x => x.Letter);
 
 
-            // Add all user types to dictionary.
-            foreach (var u in userService.GetAllUserTypes())
+            // Add permissions to dictionary by user type.
+            foreach (var userType in userService.GetAllUserTypes())
             {
-                //check if any permissions were set
-                var newUserTypePermissions = userPermissions.FirstOrDefault(x => x.UserTypeId == u.Id);
-                if (newUserTypePermissions == null) continue;
 
-                //grab base usertype permissions for reference - filters no assignable
-                var basePermissions = u.Permissions.Where(x => assignablePermissions.Contains(x[0])).ToList();
-
-                //grab new permissions
-                var permissions = newUserTypePermissions.Permissions.ToList();
-                if (!permissions.Any() && !(ignoreBase && !basePermissions.Any()))
+                // Were permissions set for the user type?
+                var newUserTypePermissions = userPermissions.FirstOrDefault(x => x.UserTypeId == userType.Id);
+                if (newUserTypePermissions == null)
                 {
-                    //no permissions set means disable all permissions
-                    permissions.Add("-");
+                    continue;
                 }
 
-                //if we ignore when set permissions match base permissions
-                if (ignoreBase && permissions.All(x => basePermissions.Contains(x)) && basePermissions.All(x => permissions.Contains(x)))
+
+                // Grab assignable base user type permissions.
+                var basePermissions = userType.Permissions
+                    .Where(x => assignablePermissions.Contains(x[0])).ToList();
+
+
+                // Grab new permissions.
+                var permissions = newUserTypePermissions.Permissions.ToList();
+                var noPermissions = !permissions.Any();
+                var noBasePermissions = !basePermissions.Any();
+                if (noPermissions && !(ignoreBase && noBasePermissions))
+                {
+
+                    // No permissions set means disable all permissions.
+                    permissions.Add("-");
+
+                }
+
+
+                // Ignore when new permissions match base permissions?
+                var permissionsContainBase = permissions.ContainsAll(basePermissions);
+                var baseContainsPermissions = basePermissions.ContainsAll(permissions);
+                var bothMatch = permissionsContainBase && baseContainsPermissions;
+                if (ignoreBase && bothMatch)
                 {
                     permissions = new List<string>();
                 }
 
 
-                //if we have any permissions set
-                permissionsByTypeId[u.Id] = permissions.ToArray();
+                // Store permissions to be set by the user type.
+                permissionsByTypeId[userType.Id] = permissions.ToArray();
 
             }
 
 
-            // Process each user type with permissions.
+            // Adjust permissions for each user type.
             foreach (var pair in permissionsByTypeId)
             {
 
@@ -184,14 +200,15 @@
                 var userType = userService.GetUserTypeById(pair.Key);
 
 
-                // Update user type permissions.
-                _userTypePermissionsService.UpdateCruds(userType, node, pair.Value.Select(x => x[0]), replaceChildPermissions);
+                // Update group permissions (not user permissions).
+                userTypePermissionsService
+                    .UpdateCruds(userType, node, pair.Value.Select(x => x[0]), replaceChildPermissions);
 
 
-                // Update user permissions?
+                // Update permissions for all users?
                 if (request.ReplacePermissionsOnUsers)
                 {
-                    _userTypePermissionsService.CopyPermissions(userType, node, replaceChildPermissions);
+                    userTypePermissionsService.CopyPermissions(userType, node, replaceChildPermissions);
                 }
 
             }
@@ -244,7 +261,7 @@
                 var typeId = ut.Id;
                 if (!permissionsByType.TryGetValue(typeId, out permissions))
                 {
-                    permissions = _userTypePermissionsService
+                    permissions = userTypePermissionsService
                         .GetPermissions(ut, nodePath);
                     permissionsByType[typeId] = permissions;
                 }

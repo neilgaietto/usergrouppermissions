@@ -1,20 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Umbraco.Core;
-using Umbraco.Core.Events;
-using Umbraco.Core.Models;
-using Umbraco.Core.Services;
-using UserGroupPermissions.Businesslogic;
-
-namespace UserGroupPermissions.Events
+﻿namespace UserGroupPermissions.Events
 {
+
+    // Namespaces.
+    using Businesslogic;
+    using Umbraco.Core;
+    using Umbraco.Core.Events;
+    using Umbraco.Core.Models;
+    using Umbraco.Core.Services;
+
+
+    /// <summary>
+    /// Events related to Umbraco content.
+    /// </summary>
     public class ContentEvents : ApplicationEventHandler
     {
+
         #region Readonly Variables
 
-        private readonly UserTypePermissionsService _userTypePermissionsService;
+        private readonly UserTypePermissionsService userTypePermissionsService;
 
         #endregion
 
@@ -26,38 +29,69 @@ namespace UserGroupPermissions.Events
         /// </summary>
         public ContentEvents()
         {
-            _userTypePermissionsService = new UserTypePermissionsService();
+            userTypePermissionsService = new UserTypePermissionsService();
             ContentService.Created += ContentService_Created;
             ContentService.Deleted += ContentService_Deleted;
             ContentService.Saved += ContentService_Saved;
         }
 
+        #endregion
+
+
+        #region Event Handlers
+
+        /// <summary>
+        /// Content saved.
+        /// </summary>
         private void ContentService_Saved(IContentService sender, SaveEventArgs<IContent> e)
         {
+
+            // Copy parent permissions to new content node.
             foreach (var entity in e.SavedEntities)
             {
-                if (!entity.IsNewEntity() || entity.Parent() == null) return;
-                //copy parent permissions to new content node
-                _userTypePermissionsService.CopyNodePermissions(entity.Parent(), entity);
+                var parent = entity.Parent();
+                if (!entity.IsNewEntity() || parent == null)
+                {
+                    return;
+                }
+                userTypePermissionsService.CopyNodePermissions(parent, entity);
             }
+
         }
 
+
+        /// <summary>
+        /// Content created.
+        /// </summary>
         private void ContentService_Created(IContentService sender, NewEventArgs<IContent> e)
         {
-            if (e.Parent == null || e.Entity == null || !e.Entity.IsNewEntity()) return;
-            //copy parent permissions to new content node
-            _userTypePermissionsService.CopyNodePermissions(e.Parent, e.Entity);
+
+            // Copy parent permissions to new content node.
+            if (e.Parent == null || e.Entity == null || !e.Entity.IsNewEntity())
+            {
+                return;
+            }
+            userTypePermissionsService.CopyNodePermissions(e.Parent, e.Entity);
+
         }
 
+
+        /// <summary>
+        /// Content deleted.
+        /// </summary>
         private void ContentService_Deleted(IContentService sender, DeleteEventArgs<IContent> e)
         {
-            //clear permissions for removed content
+
+            // Clear permissions for removed content.
             foreach (var deletedNode in e.DeletedEntities)
             {
-                _userTypePermissionsService.DeletePermissions(deletedNode);
+                userTypePermissionsService.DeletePermissions(deletedNode);
             }
 
         }
+
         #endregion
+
     }
+
 }

@@ -23,16 +23,36 @@
                 </tbody>
             </table>
             <div>
-                <input id="{{applyPermissionsId}}" type="checkbox" ng-model="userOptions.applyPermissions"/>
-                <label for="{{applyPermissionsId}}">Replace permissions on all existing users for this node?</label>
+                <input id="{{applyPermissionsId}}" type="checkbox" ng-model="userOptions.applyPermissions" />
+                <label for="{{applyPermissionsId}}">
+                    Replace permissions on all existing users for this node?
+                    <small>
+                        If selected, permissions will be updated for all users to match your selection.<br />
+                        If unselected, existing user permissions will remain unchanged.
+                    </small>
+                </label>
             </div>
             <div>
                 <input id="{{replaceChildNodePermissionsId}}" type="checkbox" ng-model="userOptions.replaceChildNodePermissions" />
-                <label for="{{replaceChildNodePermissionsId}}">Replace child node permissions?</label>
+                <label for="{{replaceChildNodePermissionsId}}">
+                    Replace child node permissions?
+                    <small>
+                        If selected, all descendant nodes will use the same permissions you specify here.<br />
+                        If unselected, your changes will only apply to the current node, "{{pageName}}".
+                    </small>
+                </label>
             </div>
             <div>
-                <input id="{{ignoreBasePermissionsId}}" type="checkbox" ng-model="userOptions.ignoreBasePermissions"/>
-                <label for="{{ignoreBasePermissionsId}}">Ignore setting permissions already set by base role?</label>
+                <input id="{{ignoreBasePermissionsId}}" type="checkbox" ng-model="userOptions.ignoreBasePermissions" />
+                <label for="{{ignoreBasePermissionsId}}">
+                    Ignore setting permissions already set by base role?
+                    <small>
+                        If selected, permissions will remain unchanged if your current selection matches
+                        that of the default permissions for a given user type.<br />
+                        If unselected, all permissions you specify here will be used (regardless of whether
+                        or not they match the default permissions for a given user type).
+                    </small>
+                </label>
             </div>
         </div>
         <p class="umb-abstract" ng-if="showFailure">
