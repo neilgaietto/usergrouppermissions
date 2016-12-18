@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>UserGroupPermissions</id>
+        <version><%= version %></version>
+        <title><%= name %></title>
+        <authors>Nicholas Westby</authors>
+        <owners>Nicholas Westby</owners>
+        <projectUrl>https://github.com/Nicholas-Westby/usergrouppermissions</projectUrl>
+        <description>
+            User Group Permissions allows permissions to be set on content nodes by user type rather than by individual users.
+        </description>
+        <tags>umbraco</tags>
+        <licenseUrl><%= licenseUrl %></licenseUrl>
+        <dependencies>
+            <dependency id="UmbracoCms.Core" version="7.3.0" />
+        </dependencies>
+    </metadata>
+</package>

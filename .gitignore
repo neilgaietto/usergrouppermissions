@@ -17,7 +17,12 @@ umbraco.config
 # Ignore NuGet files.
 /UserGroupPermissions/packages/
 
-# Visual Studio 2015 cache/options directory
+# Visual Studio 2015 cache/options directory.
 .vs/
 
-*.log
+# Ignore npm modules.
+**/node_modules/
+
+# Ignore grunt build temp files.
+**/UserGroupPermissions/tmp/
+**/UserGroupPermissions/dist/
