@@ -142,7 +142,7 @@ module.exports = function(grunt) {
       dist: {
         src: ['UserGroupPermissions.csproj'],
         options: {
-          projectConfiguration: 'Debug',
+          projectConfiguration: 'Release',
           targets: ['Clean', 'Rebuild']
         }
       }
