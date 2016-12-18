@@ -26,3 +26,6 @@ umbraco.config
 # Ignore grunt build temp files.
 **/UserGroupPermissions/tmp/
 **/UserGroupPermissions/dist/
+
+# Ignore WebStorm files.
+.idea/
