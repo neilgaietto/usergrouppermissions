@@ -1,12 +1,13 @@
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
   var path = require('path');
+  var meta = grunt.file.readJSON('config/meta.json');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    pkgMeta: grunt.file.readJSON('config/meta.json'),
+    pkgMeta: meta,
     dest: grunt.option('target') || 'dist',
-    basePath: path.join('<%= dest %>', 'App_Plugins', '<%= pkgMeta.name %>'),
+    basePath: path.join('<%= dest %>', 'App_Plugins', CleanName(meta.name)),
 
     watch: {
       options: {
@@ -157,3 +158,8 @@ module.exports = function(grunt) {
   grunt.registerTask('umbraco', ['clean:tmp', 'default', 'copy:umbraco', 'umbracoPackage:main']);
   grunt.registerTask('package', ['clean:tmp', 'default', 'copy:nuget', 'template:nuspec', 'nugetpack', 'copy:umbraco', 'umbracoPackage:main', 'clean:tmp']);
 };
+
+// Cleans a name (e.g., removes spaces).
+function CleanName(name) {
+    return name.replace(/ /g, "");
+}
