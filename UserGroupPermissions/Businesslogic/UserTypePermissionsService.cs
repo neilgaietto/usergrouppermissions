@@ -133,9 +133,20 @@
                 // Variables.
                 var userId = user.Id;
                 var userTypeId = user.UserType.Id;
-                var user2Node = _sqlHelper.Query<User2NodePermissionDto>(new Sql());
-                var userTypePermissions = _sqlHelper.Query<UserTypePermissionRow>(new Sql());
-                var nodes = _sqlHelper.Query<NodeDto>(new Sql());
+                var user2NodeBaseQuery = new Sql()
+                    .Select("userId", "nodeId", "permission")
+                    .From("umbracoUser2NodePermission")
+                    .Where("userId = @0", userId);
+                var userTypePermissionsBaseQuery = new Sql()
+                    .Select("*")
+                    .From("UserTypePermissions")
+                    .Where("userTypeId = @0", userTypeId);
+                var nodesBaseQuery = new Sql()
+                    .Select("id")
+                    .From("umbracoNode");
+                var user2Node = _sqlHelper.Query<User2NodePermissionDto>(user2NodeBaseQuery);
+                var userTypePermissions = _sqlHelper.Query<UserTypePermissionRow>(userTypePermissionsBaseQuery);
+                var nodes = _sqlHelper.Query<NodeDto>(nodesBaseQuery);
 
 
                 // Get the nodes that need permissions assigned.
