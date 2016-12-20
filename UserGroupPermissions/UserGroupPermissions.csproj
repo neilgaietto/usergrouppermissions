@@ -313,6 +313,7 @@
     <Compile Include="Models\UserTypePermission.cs" />
     <Compile Include="Models\UserTypePermissionRow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Models\NodeDto.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Plugins\UserGroupPermissions\package.manifest" />
@@ -320,6 +321,7 @@
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -348,10 +350,8 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>XCOPY "$(ProjectDir)bin\UserGroupPermissions.dll" "C:\websites\user-group-permissions-website\bin" /y /s
-XCOPY "$(ProjectDir)bin\UserGroupPermissions.pdb" "C:\websites\user-group-permissions-website\bin" /y /s
-XCOPY "$(ProjectDir)App_Plugins\UserGroupPermissions\*" "C:\websites\user-group-permissions-website\App_Plugins\UserGroupPermissions" /s /i /y
-</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Import Project="packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">

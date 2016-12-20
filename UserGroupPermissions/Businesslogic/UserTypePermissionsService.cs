@@ -73,7 +73,6 @@
         /// <returns></returns>
         public IEnumerable<UserTypePermissionRow> GetUserTypePermissions(IUserType userType)
         {
-
             var items = _sqlHelper.Fetch<UserTypePermissionRow>(
                 "select * from UserTypePermissions  where UserTypeId = @0 order by NodeId", userType.Id);
 
@@ -132,33 +131,40 @@
             {
 
                 // Variables.
-                var permissions = GetUserTypePermissions(user.UserType);
-                var contentService = ApplicationContext.Current.Services.ContentService;
-                var nodesById = new Dictionary<int, IContent>();
-                var node = default(IContent);
-                var userId = new[] { user.Id };
+                var userId = user.Id;
+                var userTypeId = user.UserType.Id;
+                var user2Node = _sqlHelper.Query<User2NodePermissionDto>(new Sql());
+                var userTypePermissions = _sqlHelper.Query<UserTypePermissionRow>(new Sql());
+                var nodes = _sqlHelper.Query<NodeDto>(new Sql());
 
 
-                // Apply each permission.
-                foreach (var permission in permissions)
-                {
+                // Get the nodes that need permissions assigned.
+                var nodesForType = userTypePermissions.Join(nodes,
+                    type => type.NodeId,
+                    node => node.NodeId,
+                    (x, y) => new { type = x, node = y });
 
-                    // Get node (try cache first).
-                    if (!nodesById.TryGetValue(permission.NodeId, out node))
+
+                // Get the existing permissions associated with specified nodes.
+                var nodesWithPermissions = nodesForType.GroupJoin(user2Node,
+                    x => new { x.node.NodeId, Permission = x.type.PermissionId, UserId = userId },
+                    x => new { x.NodeId, Permission = x.Permission, x.UserId },
+                    (x, y) => new { x.type, x.node, association = y.FirstOrDefault() });
+
+
+                // Only select the new permissions that haven't been assigned yet.
+                var newPermissions = nodesWithPermissions
+                    .Where(x => x.type.UserTypeId == userTypeId && x.association == null)
+                    .Select(x => new User2NodePermissionDto
                     {
-                        node = contentService.GetById(permission.NodeId);
-                        nodesById[permission.NodeId] = node;
-                    }
+                        UserId = userId,
+                        NodeId = x.type.NodeId,
+                        Permission = x.type.PermissionId
+                    }).ToArray();
 
 
-                    // Apply permission to node.
-                    if (!string.IsNullOrWhiteSpace(permission.PermissionId) && node != null)
-                    {
-                        var permissionId = permission.PermissionId[0];
-                        contentService.AssignContentPermission(node, permissionId, userId);
-                    }
-
-                }
+                // Insert new permissions.
+                _sqlHelper.BulkInsertRecords(newPermissions);
 
             }
         }
