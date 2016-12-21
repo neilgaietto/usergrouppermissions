@@ -139,7 +139,7 @@
             var userPermissions = request.UserTypePermissions;
             var nodeId = request.NodeId;
             var ignoreBase = request.IgnoreBasePermissions;
-            var replaceChildPermissions = request.ReplaceChildNodePermissions;
+            var applyToDescendants = request.ReplaceChildNodePermissions;
             var node = contentService.GetById(nodeId);
             var permissionsByTypeId = new Dictionary<int, string[]>();
             var assignablePermissions = ActionsResolver.Current.Actions
@@ -202,13 +202,13 @@
 
                 // Update group permissions (not user permissions).
                 userTypePermissionsService
-                    .UpdateCruds(userType, node, pair.Value.Select(x => x[0]), replaceChildPermissions);
+                    .UpdateCruds(userType, node, pair.Value.Select(x => x[0]), applyToDescendants);
 
 
                 // Update permissions for all users?
                 if (request.ReplacePermissionsOnUsers)
                 {
-                    userTypePermissionsService.CopyPermissions(userType, node, replaceChildPermissions);
+                    userTypePermissionsService.ApplyPermissions(userType, node, applyToDescendants);
                 }
 
             }
