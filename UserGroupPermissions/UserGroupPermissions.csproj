@@ -310,6 +310,7 @@
     <Compile Include="Models\ApplyRequest.cs" />
     <Compile Include="Models\SetPermissionsRequest.cs" />
     <Compile Include="Models\User2NodePermissionDto.cs" />
+    <Compile Include="Models\UserDto.cs" />
     <Compile Include="Models\UserTypePermission.cs" />
     <Compile Include="Models\UserTypePermissionRow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

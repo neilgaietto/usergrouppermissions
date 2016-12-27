@@ -171,7 +171,7 @@
                 PermissionId = x.PermissionId,
                 UserTypeId = x.UserTypeId
             });
-            _sqlHelper.BulkInsertRecords<UserTypePermissionRow>(items);
+            _sqlHelper.BulkInsertRecords(items);
         }
 
 
@@ -205,25 +205,45 @@
         {
             //TODO: Does this work?
             var query = new Sql()
-                .From("UserTypePermissions")
                 .Where<UserTypePermissionRow>(x => x.NodeId == node.Id);
-            _sqlHelper.Delete(query);
+            _sqlHelper.Delete<UserTypePermissionRow>(query);
         }
 
 
         /// <summary>
         /// Deletes the inherited permissions from all nodes for the specified user.
         /// </summary>
-        public void DeleteNodePermissionsForUser(int userId)
+        /// <param name="userId">
+        /// The ID of the user.
+        /// </param>
+        /// <param name="oldUserType">
+        /// The ID of the user's old user type.
+        /// </param>
+        public void DeleteNodePermissionsForUser(int userId, int oldUserType)
         {
-            //TODO: Does this work?
-            var query = new Sql()
-                .Select("umbracoUser2NodePermission.*")
-                .From("umbracoUser2NodePermission")
-                .InnerJoin("UserTypePermissions")
-                .On("umbracoUser2NodePermission.nodeId = UserTypePermissions.NodeId AND umbracoUser2NodePermission.Permission = UserTypePermissions.PermissionId")
-                .Where("umbracoUser2NodePermission.UserId = @0", userId);
-            _sqlHelper.Delete(query);
+
+            // Get the user type permissions corresponding the the user type.
+            var selectQuery = new Sql()
+                .Select("NodeId", "PermissionId")
+                .From("UserTypePermissions")
+                .Where("UserTypeId = @0", oldUserType);
+            var items = _sqlHelper.Query<UserTypePermissionRow>(selectQuery);
+
+
+            // Due to limitations of SQL Server Ce, we need to concatenate two fields
+            // before performing a comparison.
+            var combined = items.Select(x => x.NodeId.ToString() + "+" + x.PermissionId).ToArray();
+
+
+            // Delete the permissions.
+            foreach(var groupedItems in combined.InGroupsOf(1000))
+            {
+                var query = new Sql()
+                .Where("UserId = @0 AND (CAST(NodeId AS NVARCHAR) + '+' + Permission) IN (@1)",
+                    userId, groupedItems);
+                _sqlHelper.Delete<User2NodePermissionDto>(query);
+            }
+
         }
 
 
@@ -323,14 +343,29 @@
         /// </param>
         private void DeleteNodePermissionsForUserType(int userTypeId, int[] nodeIds)
         {
-            var query = @"
-                DELETE u2n FROM umbracoUser2NodePermission u2n
-                JOIN umbracoUser uu ON u2n.userId = uu.id
-                WHERE uu.userType = @0 AND nodeId IN (@1) AND uu.id > 0";
-            foreach (var groupedNodeIds in nodeIds.InGroupsOf(1000))
+
+            // Get the user ID's that belong to the specified user type.
+            var userQuery = new Sql()
+                .Select("Id")
+                .From("umbracoUser")
+                .Where("userType = @0 AND Id > 0", userTypeId);
+            var userIds = _sqlHelper.Query<UserDto>(userQuery).Select(x => x.Id).ToArray();
+
+
+            // Process in batches to avoid running into SQL limitations.
+            foreach (var groupedNodeIds in nodeIds.InGroupsOf(500))
             {
-                _sqlHelper.Execute(query, userTypeId, groupedNodeIds);
+                foreach (var groupedUserIds in userIds.InGroupsOf(500))
+                {
+
+                    // Delete permissions for the appropriate users and nodes.
+                    var query2 = new Sql()
+                        .Where("userId IN (@0) AND nodeId IN (@1)", groupedUserIds, groupedNodeIds);
+                    _sqlHelper.Delete<User2NodePermissionDto>(query2);
+
+                }
             }
+
         }
 
 
@@ -418,11 +453,9 @@
         {
             foreach (var groupedIds in nodeIds.InGroupsOf(1000))
             {
-                //TODO: Does this work?
                 var query = new Sql()
-                    .From("UserTypePermissions")
                     .Where("NodeId IN (@0) AND UserTypeId = @1", groupedIds, userTypeId);
-                _sqlHelper.Delete(query);
+                _sqlHelper.Delete<UserTypePermissionRow>(query);
             }
         }
 
