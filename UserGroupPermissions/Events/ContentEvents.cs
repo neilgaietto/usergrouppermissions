@@ -54,7 +54,7 @@
                 {
                     return;
                 }
-                userTypePermissionsService.CopyNodePermissions(parent, entity);
+                userTypePermissionsService.CopyNodeUserTypePermissions(parent, entity);
             }
 
         }
@@ -71,7 +71,7 @@
             {
                 return;
             }
-            userTypePermissionsService.CopyNodePermissions(e.Parent, e.Entity);
+            userTypePermissionsService.CopyNodeUserTypePermissions(e.Parent, e.Entity);
 
         }
 
@@ -85,7 +85,7 @@
             // Clear permissions for removed content.
             foreach (var deletedNode in e.DeletedEntities)
             {
-                userTypePermissionsService.DeletePermissions(deletedNode);
+                userTypePermissionsService.DeleteUserTypePermissions(deletedNode);
             }
 
         }

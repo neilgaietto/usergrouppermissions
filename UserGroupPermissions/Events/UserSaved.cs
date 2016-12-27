@@ -59,7 +59,7 @@
                         if (savedEntity.UserType.Alias != savedUser.UserType.Alias)
                         {
                             //clear previous role permissions
-                            _userTypePermissionsService.DeleteUsersRolePermissions(savedEntity.Id);
+                            _userTypePermissionsService.DeleteNodePermissionsForUser(savedEntity.Id);
 
                             //set new role permissions
                             _userTypePermissionsService.CopyPermissionsForSingleUser(savedEntity);

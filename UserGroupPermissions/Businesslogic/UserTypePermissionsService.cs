@@ -4,7 +4,6 @@
     // Namespaces.
     using ExtensionMethods;
     using Models;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.CompilerServices;
@@ -42,82 +41,49 @@
 
         #region Public Methods
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public void Insert(IUserType userType, IContent node, char permissionKey)
+        /// <summary>
+        /// Gets the permissions for the specified user type and the specified node.
+        /// </summary>
+        /// <param name="userType">
+        /// The user type to get permissions for.
+        /// </param>
+        /// <param name="nodeId">
+        /// The node ID to get permissions for.
+        /// </param>
+        /// <returns>
+        /// The permission string.
+        /// </returns>
+        public string GetPermissions(IUserType userType, int nodeId)
         {
 
-            // Method is synchronized so exists remains consistent (avoiding race condition)
+            // Variables.
+            string permissions = default(string);
 
-            bool exists = _sqlHelper.Fetch<int>("SELECT UserTypeId FROM UserTypePermissions WHERE UserTypeId = @0 AND NodeId = @1 AND PermissionId = @2", userType.Id, node.Id, permissionKey.ToString()).Any();
-            if (!exists)
+
+            // Get the permissions for the user type.
+            var userTypePermissions = GetUserTypePermissions(userType, nodeId).ToList();
+
+
+            // Create a permission string.
+            if (userTypePermissions.Any())
             {
-                var newPerms = new UserTypePermissionRow
-                {
-                    NodeId = node.Id,
-                    PermissionId = permissionKey.ToString(),
-                    UserTypeId = userType.Id,
-                };
+                var permissionCharacters = userTypePermissions.Select(x => x.PermissionId);
+                permissions = string.Join(string.Empty, permissionCharacters);
+            }
+            else
+            {
 
-                _sqlHelper.Insert(newPerms);
+                // Use default permissions for the user type (there is a convention
+                // that if no permissions were specified, the defaults should be
+                // used ).
+                permissions = string.Join(string.Empty, userType.Permissions);
 
             }
 
 
-        }
+            // Return the permissions.
+            return permissions;
 
-
-        /// <summary>
-        /// Returns the permissions for a user
-        /// </summary>
-        /// <param name="userType"></param>
-        /// <returns></returns>
-        public IEnumerable<UserTypePermissionRow> GetUserTypePermissions(IUserType userType)
-        {
-            var items = _sqlHelper.Fetch<UserTypePermissionRow>(
-                "select * from UserTypePermissions  where UserTypeId = @0 order by NodeId", userType.Id);
-
-            return items;
-        }
-
-
-        public string GetPermissions(IUserType userType, string path)
-        {
-
-            string defaultPermissions = String.Join(string.Empty, userType.Permissions);
-
-            var allUserPermissions = GetUserTypePermissions(userType).GroupBy(x => x.NodeId).ToList();
-
-            foreach (string nodeId in path.Split(','))
-            {
-                var parsedNodeId = int.Parse(nodeId);
-                if (allUserPermissions.Select(x => x.Key).Contains(parsedNodeId))
-                {
-                    var userTypenodePermissions = String.Join(string.Empty,
-                        allUserPermissions.FirstOrDefault(x => x.Key == parsedNodeId)
-                        .Select(x => x.PermissionId));
-
-                    if (!string.IsNullOrEmpty(userTypenodePermissions))
-                    {
-                        defaultPermissions = userTypenodePermissions;
-                    }
-                }
-            }
-
-            return defaultPermissions;
-        }
-
-
-        /// <summary>
-        /// Returns the permissions for a node
-        /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
-        public IEnumerable<UserTypePermissionRow> GetNodePermissions(IContent node)
-        {
-            var items = _sqlHelper.Fetch<UserTypePermissionRow>(
-                "select * from UserTypePermissions where NodeId = @0 order by nodeId", node.Id);
-
-            return items;
         }
 
 
@@ -182,6 +148,34 @@
 
 
         /// <summary>
+        /// Copies the user type permissions for one node to another.
+        /// </summary>
+        /// <param name="sourceNode">
+        /// The source node to copy permissions from.
+        /// </param>
+        /// <param name="targetNode">
+        /// The target node to copy permissions for.
+        /// </param>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void CopyNodeUserTypePermissions(IContent sourceNode, IContent targetNode)
+        {
+            var newNodeId = targetNode.Id;
+            var query = new Sql()
+                .Select("UserTypeId", "PermissionId")
+                .From("UserTypePermissions")
+                .Where("NodeId = @0", sourceNode.Id);
+            var items = _sqlHelper.Query<UserTypePermissionRow>(query);
+            items.Select(x => new UserTypePermissionRow()
+            {
+                NodeId = newNodeId,
+                PermissionId = x.PermissionId,
+                UserTypeId = x.UserTypeId
+            });
+            _sqlHelper.BulkInsertRecords<UserTypePermissionRow>(items);
+        }
+
+
+        /// <summary>
         /// Applies all permissions to users othe specified user type.
         /// </summary>
         /// <param name="userType">
@@ -202,101 +196,82 @@
 
 
         /// <summary>
-        /// Copies Node Permissions
+        /// Deletes all user type permissions for the specified node.
         /// </summary>
+        /// <param name="node">
+        /// The node to delete permissions for.
+        /// </param>
+        public void DeleteUserTypePermissions(IContent node)
+        {
+            //TODO: Does this work?
+            var query = new Sql()
+                .From("UserTypePermissions")
+                .Where<UserTypePermissionRow>(x => x.NodeId == node.Id);
+            _sqlHelper.Delete(query);
+        }
+
+
+        /// <summary>
+        /// Deletes the inherited permissions from all nodes for the specified user.
+        /// </summary>
+        public void DeleteNodePermissionsForUser(int userId)
+        {
+            //TODO: Does this work?
+            var query = new Sql()
+                .Select("umbracoUser2NodePermission.*")
+                .From("umbracoUser2NodePermission")
+                .InnerJoin("UserTypePermissions")
+                .On("umbracoUser2NodePermission.nodeId = UserTypePermissions.NodeId AND umbracoUser2NodePermission.Permission = UserTypePermissions.PermissionId")
+                .Where("umbracoUser2NodePermission.UserId = @0", userId);
+            _sqlHelper.Delete(query);
+        }
+
+
+        /// <summary>
+        /// Updates the user type permissions for the specified user type, the specified node,
+        /// and optionally all descendant nodes.
+        /// </summary>
+        /// <param name="userType">
+        /// The user type to update permissions for.
+        /// </param>
+        /// <param name="node">
+        /// The node to update permissions for.
+        /// </param>
+        /// <param name="permissions">
+        /// The permissions to update.
+        /// </param>
+        /// <param name="updateDescendants">
+        /// Update the descendants of the specified node too?
+        /// </param>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public void CopyNodePermissions(IContent sourceNode, IContent targetNode)
+        public void UpdateUserTypePermissions(IUserType userType, IContent node,
+            IEnumerable<char> permissions, bool updateDescendants)
         {
-            var sourcePermissions = GetNodePermissions(sourceNode);
-            foreach (var permission in sourcePermissions)
-            {
-                permission.NodeId = targetNode.Id;
-                _sqlHelper.Insert(permission);
-            }
-        }
 
-
-        /// <summary>
-        /// Delets all permissions for the node/user combination
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="userType"></param>
-        /// <param name="node"></param>
-        public void DeletePermissions(IUserType userType, IContent node)
-        {
-            // delete all settings on the node for this user
-
-            _sqlHelper.Execute("delete from UserTypePermissions where UserTypeId=@0 and NodeId = @1", userType.Id, node.Id);
-
-        }
-
-
-        /// <summary>
-        /// deletes all permissions for the user Type
-        /// </summary>
-        /// <param name="userType"></param>
-        public void DeletePermissions(IUserType userType)
-        {
-            // delete all settings on the node for this user
-
-            _sqlHelper.Execute("delete from UserTypePermissions where UserTypeId=@0 ", userType.Id);
-
-        }
-
-
-        /// <summary>
-        /// deletes all the users inherited permissions for all roles
-        /// </summary>
-        public void DeleteUsersRolePermissions(int userId)
-        {
-            // delete all settings on the node for this user
-
-            var items = _sqlHelper.Fetch<User2NodePermissionDto>(
-                "select umbracoUser2NodePermission.* from umbracoUser2NodePermission " +
-                "join UserTypePermissions on umbracoUser2NodePermission.nodeId = UserTypePermissions.NodeId and umbracoUser2NodePermission.permission = UserTypePermissions.PermissionId " +
-                "where umbracoUser2NodePermission.userId = @0 ", userId);
-
-            foreach (var item in items)
-            {
-                _sqlHelper.Delete<User2NodePermissionDto>(item);
-            }
-
-        }
-
-
-        /// <summary>
-        /// delete all permissions for this node
-        /// </summary>
-        /// <param name="node"></param>
-        public void DeletePermissions(IContent node)
-        {
-            _sqlHelper.Execute("delete from UserTypePermissions where NodeId = @0", node.Id);
-        }
-
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public void UpdateCruds(IUserType userType, IContent node, IEnumerable<char> permissions, bool updateChildren)
-        {
-            // do not act on admin user types.
+            // Do not act on admin user types.
             if (!userType.IsAdmin())
             {
-                // delete all settings on the node for this user
-                DeletePermissions(userType, node);
 
-                // Loop through the permissions and create them
-                foreach (char c in permissions)
+                // Variables.
+                var userTypeId = userType.Id;
+
+
+                // Get node ID's (may include descendants).
+                var nodeIds = GetNodeIdList(node, updateDescendants).ToArray();
+
+
+                // Delete the existing user type permissions for the nodes.
+                DeleteUserTypePermissions(userTypeId, nodeIds);
+
+
+                // Add the new permissions for the user type.
+                foreach (char permission in permissions)
                 {
-                    Insert(userType, node, c);
+                    InsertGroupPermissionsForUserType(userTypeId, nodeIds, permission);
                 }
 
-                if (updateChildren)
-                {
-                    foreach (var childNode in node.Children())
-                    {
-                        UpdateCruds(userType, childNode, permissions, updateChildren);
-                    }
-                }
             }
+
         }
 
         #endregion
@@ -385,6 +360,93 @@
                 var rows = _sqlHelper.Query<User2NodePermissionDto>(query);
                 _sqlHelper.BulkInsertRecords(rows);
             }
+        }
+
+
+        /// <summary>
+        /// Inserts permissions for the specified nodes. Does not check for existing permissions.
+        /// </summary>
+        /// <param name="userTypeId">
+        /// The ID of the user type to insert permissions for.
+        /// </param>
+        /// <param name="nodeIds">
+        /// The node ID's to insert permissions for.
+        /// </param>
+        /// <param name="permissionKey">
+        /// The permission to insert.
+        /// </param>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private void InsertGroupPermissionsForUserType(int userTypeId, int[] nodeIds, char permissionKey)
+        {
+            foreach (var groupedIds in nodeIds.InGroupsOf(1000))
+            {
+
+                // Select only node ID's that exist.
+                var query = new Sql()
+                    .Select("Id")
+                    .From("umbracoNode")
+                    .Where("Id In (@0)", groupedIds);
+                var nodes = _sqlHelper.Query<NodeDto>(query);
+
+
+                // Create rows to be inserted.
+                var rows = nodes.Select(x => new UserTypePermissionRow()
+                {
+                    NodeId = x.NodeId,
+                    PermissionId = permissionKey.ToString(),
+                    UserTypeId = userTypeId
+                });
+
+
+                // Bulk insert the rows.
+                _sqlHelper.BulkInsertRecords(rows);
+
+            }
+        }
+
+
+        /// <summary>
+        /// Deletes all permissions for the node/user type combination.
+        /// </summary>
+        /// <param name="userTypeId">
+        /// The ID of the user type to delete permissions for.
+        /// </param>
+        /// <param name="nodeIds">
+        /// The ID's of the nodes to delete permissions for.
+        /// </param>
+        private void DeleteUserTypePermissions(int userTypeId, int[] nodeIds)
+        {
+            foreach (var groupedIds in nodeIds.InGroupsOf(1000))
+            {
+                //TODO: Does this work?
+                var query = new Sql()
+                    .From("UserTypePermissions")
+                    .Where("NodeId IN (@0) AND UserTypeId = @1", groupedIds, userTypeId);
+                _sqlHelper.Delete(query);
+            }
+        }
+
+
+        /// <summary>
+        /// Returns the permissions for a user type and node.
+        /// </summary>
+        /// <param name="userType">
+        /// The user type.
+        /// </param>
+        /// <param name="nodeId">
+        /// The node ID to get permissions for.
+        /// </param>
+        /// <returns>
+        /// The permissions.
+        /// </returns>
+        private IEnumerable<UserTypePermissionRow> GetUserTypePermissions(IUserType userType, int nodeId)
+        {
+            var query = new Sql()
+                .Select("*")
+                .From("UserTypePermissions")
+                .Where("UserTypeId = @0 AND NodeId = @1", userType.Id, nodeId);
+            var items = _sqlHelper.Fetch<UserTypePermissionRow>(query);
+            return items;
         }
 
         #endregion

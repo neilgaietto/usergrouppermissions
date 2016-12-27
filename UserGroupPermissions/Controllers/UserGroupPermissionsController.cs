@@ -198,14 +198,15 @@
 
                 // Variables.
                 var userType = userService.GetUserTypeById(pair.Key);
+                var permissions = pair.Value.Select(x => x[0]);
 
 
                 // Update group permissions (not user permissions).
-                userTypePermissionsService
-                    .UpdateCruds(userType, node, pair.Value.Select(x => x[0]), applyToDescendants);
+                userTypePermissionsService.UpdateUserTypePermissions(userType, node, permissions,
+                    applyToDescendants);
 
 
-                // Update permissions for all users?
+                // Update native permissions for all users of user type?
                 if (request.ReplacePermissionsOnUsers)
                 {
                     userTypePermissionsService.ApplyPermissions(userType, node, applyToDescendants);
@@ -241,7 +242,7 @@
             var userService = ApplicationContext.Services.UserService;
             var contentService = ApplicationContext.Services.ContentService;
             var node = contentService.GetById(request.NodeId);
-            var nodePath = node.Path;
+            var nodeId = node.Id;
             var user = Security.CurrentUser;
             var orderedUserTypes = userService.GetAllUserTypes()
                 .Where(x => x.Id > 0 && !"admin".InvariantEquals(x.Alias))
@@ -261,8 +262,7 @@
                 var typeId = ut.Id;
                 if (!permissionsByType.TryGetValue(typeId, out permissions))
                 {
-                    permissions = userTypePermissionsService
-                        .GetPermissions(ut, nodePath);
+                    permissions = userTypePermissionsService.GetPermissions(ut, nodeId);
                     permissionsByType[typeId] = permissions;
                 }
                 return permissions.IndexOf(letter) > -1;
