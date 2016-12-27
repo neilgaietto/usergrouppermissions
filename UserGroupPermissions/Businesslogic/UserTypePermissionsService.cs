@@ -61,7 +61,7 @@
 
 
             // Get the permissions for the user type.
-            var userTypePermissions = GetUserTypePermissions(userType, nodeId).ToList();
+            var userTypePermissions = GetUserTypePermissions(userType, nodeId);
 
 
             // Create a permission string.
@@ -170,7 +170,7 @@
                 NodeId = newNodeId,
                 PermissionId = x.PermissionId,
                 UserTypeId = x.UserTypeId
-            });
+            }).ToArray();
             _sqlHelper.BulkInsertRecords(items);
         }
 
@@ -392,7 +392,7 @@
                     .On("a.NodeId = b.nodeId AND a.PermissionId = b.permission AND b.userId = c.id")
                     .Where("a.UserTypeId = @0 AND a.NodeId IN (@1) AND b.userId IS NULL",
                         userTypeId, groupedNodeIds);
-                var rows = _sqlHelper.Query<User2NodePermissionDto>(query);
+                var rows = _sqlHelper.Query<User2NodePermissionDto>(query).ToArray();
                 _sqlHelper.BulkInsertRecords(rows);
             }
         }
@@ -430,7 +430,7 @@
                     NodeId = x.NodeId,
                     PermissionId = permissionKey.ToString(),
                     UserTypeId = userTypeId
-                });
+                }).ToArray();
 
 
                 // Bulk insert the rows.
@@ -479,7 +479,7 @@
                 .From("UserTypePermissions")
                 .Where("UserTypeId = @0 AND NodeId = @1", userType.Id, nodeId);
             var items = _sqlHelper.Fetch<UserTypePermissionRow>(query);
-            return items;
+            return items.ToArray();
         }
 
         #endregion
