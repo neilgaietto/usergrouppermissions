@@ -110,7 +110,7 @@ module.exports = function(grunt) {
           author: '<%= pkgMeta.author %>',
           authorUrl: '<%= pkgMeta.authorUrl %>',
           manifest: 'config/package.xml',
-          readme: 'config/readme.txt',
+          readme: grunt.file.read('config/readme.txt'),
           outputName: 'UserGroupPermissions_<%= pkgMeta.version %>.zip'
         }
       }
