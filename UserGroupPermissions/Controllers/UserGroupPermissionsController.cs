@@ -3,6 +3,7 @@
 
     // Namespaces.
     using Businesslogic;
+    using ExtensionMethods;
     using Models;
     using System;
     using System.Collections.Generic;
@@ -144,10 +145,13 @@
             var permissionsByTypeId = new Dictionary<int, string[]>();
             var assignablePermissions = ActionsResolver.Current.Actions
                 .Where(x => x.CanBePermissionAssigned).Select(x => x.Letter);
+            var allUserTypes = userService.GetAllUserTypes()
+                .Where(x => !x.IsAdmin())
+                .ToArray();
 
 
             // Add permissions to dictionary by user type.
-            foreach (var userType in userService.GetAllUserTypes())
+            foreach (var userType in allUserTypes)
             {
 
                 // Were permissions set for the user type?
@@ -245,9 +249,8 @@
             var nodeId = node.Id;
             var user = Security.CurrentUser;
             var orderedUserTypes = userService.GetAllUserTypes()
-                .Where(x => x.Id > 0 && !"admin".InvariantEquals(x.Alias))
+                .Where(x => x.Id > 0 && !x.IsAdmin())
                 .OrderBy(x => x.Name);
-
             var orderedActions = ActionsResolver.Current.Actions
                 .Where(x => x.CanBePermissionAssigned)
                 .OrderBy(x => NameForAction(x, user));

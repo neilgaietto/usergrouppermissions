@@ -239,8 +239,8 @@
             foreach(var groupedItems in combined.InGroupsOf(1000))
             {
                 var query = new Sql()
-                .Where("UserId = @0 AND (CAST(NodeId AS NVARCHAR) + '+' + Permission) IN (@1)",
-                    userId, groupedItems);
+                    .Where("UserId = @0 AND (CAST(NodeId AS NVARCHAR) + '+' + Permission) IN (@1)",
+                        userId, groupedItems);
                 _sqlHelper.Delete<User2NodePermissionDto>(query);
             }
 
@@ -390,7 +390,7 @@
                     .On("a.UserTypeId = c.userType")
                     .LeftOuterJoin("umbracoUser2NodePermission b")
                     .On("a.NodeId = b.nodeId AND a.PermissionId = b.permission AND b.userId = c.id")
-                    .Where("a.UserTypeId = @0 AND a.NodeId IN (@1) AND b.userId IS NULL",
+                    .Where("a.UserTypeId = @0 AND a.NodeId IN (@1) AND b.userId IS NULL AND c.id > 0",
                         userTypeId, groupedNodeIds);
                 var rows = _sqlHelper.Query<User2NodePermissionDto>(query).ToArray();
                 _sqlHelper.BulkInsertRecords(rows);
