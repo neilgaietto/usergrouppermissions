@@ -44,7 +44,8 @@
         {
 
             // Variables.
-            var user = sender.Security.CurrentUser;
+            var userService = ApplicationContext.Current.Services.UserService;
+            var currentUser = sender.Security.CurrentUser;
             var treeType = e.QueryStrings.Get("treeType");
             var section = e.QueryStrings.Get("section");
             var validTree = "users".InvariantEquals(treeType) && "users".InvariantEquals(section);
@@ -53,8 +54,12 @@
             var validUserId = int.TryParse(strUserId, out userId)
                 ? userId > 0
                 : false;
-            var validUser = user.IsAdmin();
-            var shouldAddMenuItem = validTree && validUserId && validUser;
+            var user = validUserId
+                ? userService.GetUserById(userId)
+                : null;
+            var validUser = user != null && !user.IsAdmin();
+            var validCurrentUser = currentUser.IsAdmin();
+            var shouldAddMenuItem = validTree && validCurrentUser && validUserId && validUser;
 
 
             // Add the menu item?
