@@ -126,7 +126,7 @@ module.exports = function(grunt) {
         files: ['UserGroupPermissions.csproj'],
         filename: 'AssemblyInfo.cs',
         info: {
-          version: '<%= (pkgMeta.version.indexOf("-") ? pkgMeta.version.substring(0, pkgMeta.version.indexOf("-")) : pkgMeta.version) %>', 
+          version: '<%= (pkgMeta.version.indexOf("-") >= 0 ? pkgMeta.version.substring(0, pkgMeta.version.indexOf("-")) : pkgMeta.version) %>',
           fileVersion: '<%= pkgMeta.version %>'
         }
       }
