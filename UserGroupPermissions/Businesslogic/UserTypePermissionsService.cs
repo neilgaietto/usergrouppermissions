@@ -203,7 +203,6 @@
         /// </param>
         public void DeleteUserTypePermissions(IContent node)
         {
-            //TODO: Does this work?
             var query = new Sql()
                 .Where<UserTypePermissionRow>(x => x.NodeId == node.Id);
             _sqlHelper.Delete<UserTypePermissionRow>(query);
@@ -300,6 +299,20 @@
         #region Private Methods
 
         /// <summary>
+        /// Returns the ID of the admin user type.
+        /// </summary>
+        /// <returns>
+        /// The user type ID.
+        /// </returns>
+        private int GetAdminUserTypeId()
+        {
+            var userService = ApplicationContext.Current.Services.UserService;
+            var adminUserTypeId = userService.GetUserTypeByAlias("admin").Id;
+            return adminUserTypeId;
+        }
+
+
+        /// <summary>
         /// Returns a node ID list for the specified node.
         /// </summary>
         /// <param name="node">
@@ -381,6 +394,15 @@
         /// </param>
         public void InsertNodePermissionsForUserType(int userTypeId, int[] nodeIds)
         {
+
+            // Do nothing for admins.
+            if (userTypeId == GetAdminUserTypeId())
+            {
+                return;
+            }
+
+
+            // Process in batches to avoid SQL limitations.
             foreach (var groupedNodeIds in nodeIds.InGroupsOf(1000))
             {
                 var query = new Sql()
@@ -395,6 +417,7 @@
                 var rows = _sqlHelper.Query<User2NodePermissionDto>(query).ToArray();
                 _sqlHelper.BulkInsertRecords(rows);
             }
+
         }
 
 
